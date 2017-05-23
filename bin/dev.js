@@ -15,18 +15,9 @@
  *    limitations under the License.
  **/
 'use strict';
-const version       = require('./package.json').version;
+const chokidar      = require('chokidar');
 
-console.log('WABS Starter (version ' + version + ')');
-
-switch(process.argv[2]) {
-    case 'dev':
-        require('./bin/dev');
-        break;
-    case 'init':
-        require('./bin/init');
-        break;
-    case 'run':
-        require('./bin/run');
-        break;
-}
+// One-liner for current directory, ignores .dotfiles
+chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (event, path) => {
+    console.log(event, path);
+});
