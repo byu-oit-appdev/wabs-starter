@@ -21,7 +21,6 @@ const version       = require('./package.json').version;
 console.log('WABS Starter (version ' + version + ')');
 
 const arg = process.argv[2];
-console.log(arg);
 switch(arg) {
     case 'dev':
         require('./bin/dev');
