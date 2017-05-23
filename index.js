@@ -29,7 +29,7 @@ switch(arg) {
         require('./bin/init');
         break;
     case 'start':
-        //require('./bin/run');
+        require('./bin/start');
         break;
     default:
         console.log('Command not defined: ' + arg + '. Try one of: dev, init, start');
