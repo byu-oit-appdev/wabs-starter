@@ -33,5 +33,5 @@ exports.getAppRoot = function() {
 
 exports.getPackage = function() {
     const fullPath = exports.getAppRoot();
-    return fullPath ? JSON.parse(fs.readFileSync(fullPath, 'utf8')) : null;
+    return fullPath ? JSON.parse(fs.readFileSync(path.resolve(fullPath, 'package.json'), 'utf8')) : null;
 };
