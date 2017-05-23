@@ -34,23 +34,31 @@ const fullPath = path.resolve(appDirectory, start.split(' ')[1]);
 
 let instance;
 let debounce;
+let isRestartKill;
 
-// One-liner for current directory, ignores .dotfiles
+// current directory, ignores .dotfiles
 chokidar.watch(appDirectory, {ignored: /(^|[\/\\])\../}).on('all', () => {
     clearTimeout(debounce);
-    debounce = setTimeout(restart, 500);
+    debounce = setTimeout(() => {
+        if (instance) {
+            instance.kill();
+            isRestartKill = true;
+        } else {
+            restart();
+        }
+    }, 500);
 });
 
 function restart() {
-    if (instance) instance.kill();
-
-    // start the server
+    // start an instance
     instance = fork(fullPath, start.split(' ').slice(2));
 
     // if the server exits with an error code then restart it
     instance.on('exit', code => {
         if (code !== 0) {
             instance = null;
+            restart();
+        } else if (isRestartKill) {
             restart();
         }
     });
