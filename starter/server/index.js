@@ -18,6 +18,7 @@
 const cookieParser      = require('cookie-parser');     // required by WABS middleware
 const bodyParser        = require('body-parser');       // required by WABS middleware
 const express           = require('express');
+const path              = require('path');
 const wabsMw            = require('wabs-middleware');
 
 const app = express();
@@ -46,7 +47,7 @@ app.use('/api/example', require('./routers/example'));
 app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
 
 // static file routing for static files (recommended)
-app.use(express.static(__dirname + '/www/'));
+app.use(express.static(path.resolve(__dirname, '../www/')));
 
 // catch any 404s to provide a beautified 404 response (recommended)
 app.use(function(req, res) { res.sendStatus(404); });
