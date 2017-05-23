@@ -38,11 +38,17 @@ inquirer.prompt(
 
         // update package.json file
         const packagePath = path.resolve(destination, 'package.json');
-        const content = fs.readFileSync(packagePath, 'utf8')
+        const pkgContent = fs.readFileSync(packagePath, 'utf8')
             .replace(/{{name}}/g, answers.name)
             .replace(/{{description}}/g, answers.description)
             .replace(/{{author}}/g, answers.author);
-        fs.writeFileSync(packagePath, content);
+        fs.writeFileSync(packagePath, pkgContent);
+
+        // update the server/index.js
+        const indexPath = path.resolve(destination, 'server/index.js');
+        const indexContent = fs.readFileSync(indexPath, 'utf8')
+            .replace(/{{name}}/g, answers.name);
+        fs.writeFileSync(indexPath, indexContent);
 
         // run npm install
         const child = spawn('npm', ['install'], { cwd: destination });
