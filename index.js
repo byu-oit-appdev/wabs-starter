@@ -20,7 +20,9 @@ const version       = require('./package.json').version;
 
 console.log('WABS Starter (version ' + version + ')');
 
-switch(process.argv[2]) {
+const arg = process.argv[2];
+console.log(arg);
+switch(arg) {
     case 'dev':
         require('./bin/dev');
         break;
@@ -31,5 +33,5 @@ switch(process.argv[2]) {
         //require('./bin/run');
         break;
     default:
-        console.log('Command not defined: ' + process.argv[2] + '. Try one of: dev, init, start');
+        console.log('Command not defined: ' + arg + '. Try one of: dev, init, start');
 }
