@@ -1,12 +1,22 @@
 # WABS Starter
 
-This repository is a starter kit for writing web applications. It implements the [wabs-middleware](https://github.com/byu-oit-appdev/wabs-middleware) that facilitates authentication, authorization, and interoperability with C-Framework brownies.
+This full stack application was initialized using the [WABS Starter](https://github.com/byu-oit-appdev/wabs-starter).
 
-## Project Set Up
+It is recommended that you have the [WABS Starter](https://github.com/byu-oit-appdev/wabs-starter) installed globally:
 
-Within your project directory run the command: `npm install`. This will install both the NodeJS and Bower dependencies.
+```sh
+npm install -g byu-oit-appdev/wabs-starter
+```
 
-### File System Structure
+## Helpful Commands
+
+These commands must be executed within the web applications directory (a.k.a. where this README.md file exists).
+
+- `wabs start` - Start the server in development mode.
+
+- `wabs dev` - Start the server in development mode. The server will automatically restart when you've made modifications to the server code. 
+
+## File System Structure
 
 - The `www` directory should include:
 
@@ -16,13 +26,15 @@ Within your project directory run the command: `npm install`. This will install 
     
     - The `index.html` is the start page for your app.
     
+    - Has the official BYU `favicon.ico`.
+    
 - The `server` directory:
 
     - This is where you place all of your server code.
     
     - This will be run with NodeJS. These files are not available to the browser.
     
-    - The `index.js` file is the start script for the server.
+    - The `index.js` file is the start script for the server. Take a look at this file and add/remove code as necessary. Avoid saving routes directly to this file.
     
     - Any routers you create should be placed in the `routers` sub directory.
     
