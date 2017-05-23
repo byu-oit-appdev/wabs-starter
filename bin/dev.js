@@ -20,6 +20,8 @@ const fork          = require('child_process').fork;
 const path          = require('path');
 const util          = require('./util');
 
+console.log('Starting server in development mode...');
+
 const appDirectory = util.getAppRoot();
 if (appDirectory === '') {
     console.log('Could not find wabs full-stack application root directory in: ' + process.cwd());
