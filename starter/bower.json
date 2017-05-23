@@ -1,0 +1,12 @@
+{
+  "name": "www",
+  "authors": [],
+  "description": "web application",
+  "main": "index.html",
+  "license": "Apache-2.0",
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0"
+  }
+}

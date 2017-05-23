@@ -1,0 +1,21 @@
+{
+  "name": "{{name}}",
+  "version": "1.0.0",
+  "description": "{{description}}",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "mocha test",
+    "postinstall": "./node_modules/bower/bin/bower install"
+  },
+  "private": true,
+  "author": "{{author}}",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "bower": "^1.8.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.3",
+    "wabs-middleware": "github:byu-oit-appdev/wabs-middleware"
+  }
+}
