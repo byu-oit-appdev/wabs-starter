@@ -16,8 +16,40 @@
  **/
 'use strict';
 const chokidar      = require('chokidar');
+const fork          = require('child_process').fork;
+const path          = require('path');
+const util          = require('./util');
+
+const appDirectory = util.getAppRoot();
+if (appDirectory === '') {
+    console.log('Could not find wabs full-stack application root directory in: ' + process.cwd());
+    process.exit(1);
+}
+
+const pkg = util.getPackage();
+const start = pkg.scripts.start;
+const fullPath = path.resolve(appDirectory, start.split(' ')[1]);
+
+let instance;
+let debounce;
 
 // One-liner for current directory, ignores .dotfiles
-chokidar.watch('.', {ignored: /(^|[\/\\])\../}).on('all', (event, path) => {
-    console.log(event, path);
+chokidar.watch(appDirectory, {ignored: /(^|[\/\\])\../}).on('all', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(restart, 500);
 });
+
+function restart() {
+    if (instance) instance.kill();
+
+    // start the server
+    instance = fork(fullPath, start.split(' ').slice(2));
+
+    // if the server exits with an error code then restart it
+    instance.on('exit', code => {
+        if (code !== 0) {
+            instance = null;
+            restart();
+        }
+    });
+}
