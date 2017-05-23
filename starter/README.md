@@ -12,9 +12,7 @@ npm install -g byu-oit-appdev/wabs-starter
 
 These commands must be executed within the web applications directory (a.k.a. where this README.md file exists).
 
-- `wabs start` - Start the server in development mode.
-
-- `wabs dev` - Start the server in development mode. The server will automatically restart when you've made modifications to the server code. 
+- `npm start` - Start the server. 
 
 ## File System Structure
 
