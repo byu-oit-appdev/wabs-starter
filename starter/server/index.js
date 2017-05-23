@@ -39,30 +39,14 @@ app.use(bodyParser.json());
 // middleware for routes and adding req.wabs object, required for all other WABS middleware to function (required)
 app.use(wabs.init());
 
-// create a protected endpoint (optional)
-app.get('/protected', wabs.authenticated(), function(req, res) {
-    res.send('Access granted');
-});
-
-// have CAS and WSO2 both identify the user prior to taking this path (optional)
-app.get('/sync', wabs.sync(), function(req, res) {
-    res.send('User is logged in: ' + !!req.wabs.user);
-});
-
-// login route (optional)
-app.get('/login', wabs.login);
-
-// log out route (optional)
-app.get('/logout', wabs.logout);
+// add API routers here for your local REST API endpoints
+app.use('/api/example', require('./routers/example'));
 
 // html5 routing for paths that should resolve to the index file (recommended)
 app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
 
 // static file routing for static files (recommended)
 app.use(express.static(__dirname + '/www/'));
-
-// add API routers here for your local REST API endpoints
-app.use('/api/example', require('./routers/example'));
 
 // catch any 404s to provide a beautified 404 response (recommended)
 app.use(function(req, res) { res.sendStatus(404); });
