@@ -27,7 +27,9 @@ switch(process.argv[2]) {
     case 'init':
         require('./bin/init');
         break;
-    case 'run':
-        require('./bin/run');
+    case 'start':
+        //require('./bin/run');
         break;
+    default:
+        console.log('Command not defined: ' + process.argv[2] + '. Try one of: dev, init, start');
 }
