@@ -2,11 +2,12 @@
   "name": "wabs-starter",
   "version": "1.0.0",
   "description": "web application starter kit",
-  "main": "server/index.js",
+  "main": "index.js",
+  "bin": {
+    "wabs": "index.js"
+  },
   "scripts": {
-    "start": "node server/index.js",
-    "test": "mocha test",
-    "postinstall": "./node_modules/bower/bin/bower install"
+    "test": "mocha test"
   },
   "private": true,
   "author": "James Speirs <james_speirs@byu.edu>",
