@@ -23,9 +23,9 @@ const wabsMw            = require('wabs-middleware');
 const app = express();
 const encryptSecret = 'this should be a strong password';
 const wabs = wabsMw({
-    appName: 'my-app',
-    consumerKey: 'Gx2F2Qz58mDQH7M9e4qVSW5IWs4d',
-    consumerSecret: 'PjSJMCMt3sSOa6DZVa6Ah41ZBoh5',
+    appName: '{{name}}',
+    consumerKey: '',
+    consumerSecret: '',
     encryptSecret: encryptSecret
 });
 
