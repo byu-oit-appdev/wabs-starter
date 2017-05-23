@@ -12,6 +12,7 @@
   "author": "James Speirs <james_speirs@byu.edu>",
   "license": "Apache-2.0",
   "dependencies": {
+    "chokidar": "^1.7.0",
     "copy-dir": "^0.3.0",
     "inquirer": "^3.0.6"
   }
