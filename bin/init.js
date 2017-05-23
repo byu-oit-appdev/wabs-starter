@@ -24,7 +24,7 @@ const spawn         = require('child_process').spawn;
 
 inquirer.prompt(
     [
-        { name: 'name', message: 'Application name:', validate: required },
+        { name: 'name', message: 'Application name:', validate: validName },
         { name: 'description', message: 'Description:' },
         { name: 'author', message: 'Author:' },
         { name: 'destination', message: 'Destination directory:', validate: required }
@@ -60,5 +60,11 @@ inquirer.prompt(
 
 function required(value) {
     if (value.length === 0) return 'Input required';
+    return true;
+}
+
+function validName(value) {
+    if (value.length === 0) return 'Input required';
+    if (!/^[a-z0-9-_]+$/.test(value)) return 'Invalid name. Must include only alpha-numeric characters, underscore, and dash.';
     return true;
 }
