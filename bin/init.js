@@ -30,7 +30,7 @@ inquirer.prompt(
         { name: 'destination', message: 'Destination directory:', validate: required }
     ])
     .then(answers => {
-        const source = path.resolve(__dirname, 'starter');
+        const source = path.resolve(__dirname, '../starter');
         const destination = path.resolve(process.cwd(), answers.destination);
 
         // copy starter content
