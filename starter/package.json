@@ -17,5 +17,6 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.15.3",
     "wabs-middleware": "github:byu-oit-appdev/wabs-middleware"
-  }
+  },
+  "wabs": true
 }
