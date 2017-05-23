@@ -20,7 +20,7 @@ const fork          = require('child_process').fork;
 const path          = require('path');
 const util          = require('./util');
 
-console.log('Starting server in development mode...');
+console.log('Please wait...');
 
 const appDirectory = util.getAppRoot();
 if (appDirectory === '') {
@@ -41,9 +41,11 @@ chokidar.watch(appDirectory, {ignored: /(^|[\/\\])\../}).on('all', () => {
     clearTimeout(debounce);
     debounce = setTimeout(() => {
         if (instance) {
+            console.log('Restarting server...');
             instance.kill();
             isRestartKill = true;
         } else {
+            console.log('Starting server...');
             restart();
         }
     }, 500);
