@@ -62,6 +62,8 @@ To promote consistency for BYU OIT Application Development the following definit
 
 1. Set up a WSO2 application on [http://api.byu.edu/store](http://api.byu.edu/store).
 
+    The callback URL for the WSO2 application should be `https://<your-domain>/wabs/oauth-code`.
+
 2. Configure the [wabs-middleware](https://github.com/byu-oit-appdev/wabs-middleware) to use the consumer key and consumer secret from your WSO2 application.
 
     **Important:** Do not push these keys to github. Coming soon there will be a solution will exist that avoids this pitfall.
