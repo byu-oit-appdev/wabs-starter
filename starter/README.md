@@ -1,8 +1,8 @@
 # WABS Starter
 
-This full stack application was initialized using the [WABS Starter](https://github.com/byu-oit-appdev/wabs-starter).
+This full stack application was initialized using the [WABS Starter](https://github.com/byu-oit/wabs-starter).
 
-It is recommended that you have the [WABS Starter](https://github.com/byu-oit-appdev/wabs-starter) installed globally:
+It is recommended that you have the [WABS Starter](https://github.com/byu-oit/wabs-starter) installed globally:
 
 ```sh
 npm install -g byu-oit-appdev/wabs-starter
@@ -34,7 +34,7 @@ To promote consistency for BYU OIT Application Development the following definit
 
 - We are using [Express server](http://expressjs.com) for our NodeJS servers.
 
-- The server uses [wabs-middleware](https://github.com/byu-oit-appdev/wabs-middleware) to manage CAS authentication, WSO2 authorization, and interoperability with legacy frameworks.
+- The server uses [wabs-middleware](https://github.com/byu-oit/wabs-middleware) to manage CAS authentication, WSO2 authorization, and interoperability with legacy frameworks.
 
 - It serves static files from the `www` directory.
 
@@ -64,7 +64,7 @@ To promote consistency for BYU OIT Application Development the following definit
 
     The callback URL for the WSO2 application should be `https://<your-domain>/wabs/oauth-code`.
 
-2. Configure the [wabs-middleware](https://github.com/byu-oit-appdev/wabs-middleware) to use the consumer key and consumer secret from your WSO2 application.
+2. Configure the [wabs-middleware](https://github.com/byu-oit/wabs-middleware) to use the consumer key and consumer secret from your WSO2 application.
 
     **Important:** Do not push these keys to github. Coming soon there will be a solution will exist that avoids this pitfall.
     
