@@ -31,9 +31,35 @@ inquirer.prompt(
         { name: 'destination', message: 'Destination directory:', validate: required }
     ])
     .then(answers => {
+        answers.destination = path.resolve(process.cwd(), answers.destination);
+
+        // check that the destination is empty
+        try {
+            const destinationFiles = fs.readdir(answers.destination);
+            if (destinationFiles.length > 0) {
+                return inquirer.prompt(
+                    [
+                        {
+                            name: 'confirm',
+                            type: 'confirm',
+                            message: 'Destination directory is not empty. Do you want to proceed?',
+                            default: false
+                        }
+                    ])
+                    .then(ans => {
+                        answers.confirm = ans.confirm;
+                    });
+            }
+        } catch (e) {
+            if (e.code !== 'ENOENT') return Promise.reject(e);
+            answers.confirm = true;
+        }
+
+        return answers;
+    })
+    .then(answers => {
         const source = path.resolve(__dirname, '../starter');
-        const destination = path.resolve(process.cwd(), answers.destination);
-        console.log(destination);
+        const destination = answers.destination;
 
         // copy starter content
         copyDir.sync(source, destination);
