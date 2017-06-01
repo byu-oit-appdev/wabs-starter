@@ -33,9 +33,11 @@ inquirer.prompt(
     .then(answers => {
         const source = path.resolve(__dirname, '../starter');
         const destination = path.resolve(process.cwd(), answers.destination);
+        console.log(destination);
 
         // copy starter content
         copyDir.sync(source, destination);
+        console.log('Application created at: ' + destination);
 
         // update package.json file
         const packagePath = path.resolve(destination, 'package.json');
@@ -44,16 +46,17 @@ inquirer.prompt(
             .replace(/{{description}}/g, answers.description)
             .replace(/{{author}}/g, answers.author);
         fs.writeFileSync(packagePath, pkgContent);
+        console.log('Updated package.json');
 
         // update the server/index.js
         const indexPath = path.resolve(destination, 'server/index.js');
         const indexContent = fs.readFileSync(indexPath, 'utf8')
             .replace(/{{name}}/g, answers.name);
         fs.writeFileSync(indexPath, indexContent);
-
-        console.log('Setting up project.');
+        console.log('Updated server/index.js');
 
         // run npm install
+        process.stdout.write('Running npm install. Please wait.');
         if (isWin) {
             const intervalId = setInterval(() => process.stdout.write('.'), 1000);
             childProcess.exec('npm install', { cwd: destination }, function(err, stdout, stderr) {
@@ -68,6 +71,7 @@ inquirer.prompt(
                 }
             });
         } else {
+            process.stdout.write('\n');
             const child = childProcess.spawn('npm', ['install'], { cwd: destination });
             child.stdout.on('data', data => process.stdout.write(data.toString()));
             child.stderr.on('data', data => process.stderr.write(data.toString()));
