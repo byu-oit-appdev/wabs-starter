@@ -109,7 +109,8 @@ inquirer.prompt(
                 }
             });
         }
-    });
+    })
+    .catch(e => console.error(e.stack));
 
 
 function required(value) {
