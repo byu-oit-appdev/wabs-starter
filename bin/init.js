@@ -15,12 +15,13 @@
  *    limitations under the License.
  **/
 'use strict';
-
+const childProcess  = require('child_process');
 const copyDir       = require('copy-dir');
 const fs            = require('fs');
 const inquirer      = require('inquirer');
 const path          = require('path');
-const spawn         = require('child_process').spawn;
+
+const isWin = process.platform === 'win32';
 
 inquirer.prompt(
     [
@@ -50,17 +51,34 @@ inquirer.prompt(
             .replace(/{{name}}/g, answers.name);
         fs.writeFileSync(indexPath, indexContent);
 
+        console.log('Setting up project.');
+
         // run npm install
-        const child = spawn('npm', ['install'], { cwd: destination });
-        child.stdout.on('data', data => process.stdout.write(data.toString()));
-        child.stderr.on('data', data => process.stderr.write(data.toString()));
-        child.on('exit', code => {
-            if (parseInt(code) === 0) {
-                console.log('Done.');
-            } else {
-                console.log('Completed with exit code: ' + code);
-            }
-        });
+        if (isWin) {
+            const intervalId = setInterval(() => process.stdout.write('.'), 1000);
+            childProcess.exec('npm install', { cwd: destination }, function(err, stdout, stderr) {
+                clearInterval(intervalId);
+                process.stdout.write('\r\n');
+                console.log(stdout);
+                console.error(stderr);
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log('Done');
+                }
+            });
+        } else {
+            const child = childProcess.spawn('npm', ['install'], { cwd: destination });
+            child.stdout.on('data', data => process.stdout.write(data.toString()));
+            child.stderr.on('data', data => process.stderr.write(data.toString()));
+            child.on('exit', code => {
+                if (parseInt(code) === 0) {
+                    console.log('Done.');
+                } else {
+                    console.log('Completed with exit code: ' + code);
+                }
+            });
+        }
     });
 
 
