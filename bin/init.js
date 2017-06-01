@@ -35,7 +35,7 @@ inquirer.prompt(
 
         // check that the destination is empty
         try {
-            const destinationFiles = fs.readdir(answers.destination);
+            const destinationFiles = fs.readdirSync(answers.destination);
             if (destinationFiles.length > 0) {
                 return inquirer.prompt(
                     [
