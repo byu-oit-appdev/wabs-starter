@@ -5,7 +5,7 @@ A simple command line utility for creating full stack web applications. Includes
 **Installation**
 
 ```sh
-npm install -g byu-oit-appdev/wabs-starter
+npm install -g byu-oit/wabs-starter
 ```
 
 **Usage**
