@@ -48,6 +48,7 @@ inquirer.prompt(
                     ])
                     .then(ans => {
                         answers.confirm = ans.confirm;
+                        return answers;
                     });
             }
         } catch (e) {
@@ -61,53 +62,57 @@ inquirer.prompt(
         const source = path.resolve(__dirname, '../starter');
         const destination = answers.destination;
 
-        // copy starter content
-        copyDir.sync(source, destination);
-        console.log('Application created at: ' + destination);
-
-        // update package.json file
-        const packagePath = path.resolve(destination, 'package.json');
-        const pkgContent = fs.readFileSync(packagePath, 'utf8')
-            .replace(/{{name}}/g, answers.name)
-            .replace(/{{description}}/g, answers.description)
-            .replace(/{{author}}/g, answers.author);
-        fs.writeFileSync(packagePath, pkgContent);
-        console.log('Updated package.json');
-
-        // update the server/index.js
-        const indexPath = path.resolve(destination, 'server/index.js');
-        const indexContent = fs.readFileSync(indexPath, 'utf8')
-            .replace(/{{name}}/g, answers.name);
-        fs.writeFileSync(indexPath, indexContent);
-        console.log('Updated server/index.js');
-
-        // run npm install
-        process.stdout.write('Running npm install. Please wait.');
-        if (isWin) {
-            const intervalId = setInterval(() => process.stdout.write('.'), 1000);
-            childProcess.exec('npm install', { cwd: destination }, function(err, stdout, stderr) {
-                clearInterval(intervalId);
-                process.stdout.write('\r\n');
-                console.log(stdout);
-                console.error(stderr);
-                if (err) {
-                    console.error(err);
-                } else {
-                    console.log('Done');
-                }
-            });
+        if (!answers.confirm) {
+            console.log('Initialization canceled by user.');
         } else {
-            process.stdout.write('\n');
-            const child = childProcess.spawn('npm', ['install'], { cwd: destination });
-            child.stdout.on('data', data => process.stdout.write(data.toString()));
-            child.stderr.on('data', data => process.stderr.write(data.toString()));
-            child.on('exit', code => {
-                if (parseInt(code) === 0) {
-                    console.log('Done.');
-                } else {
-                    console.log('Completed with exit code: ' + code);
-                }
-            });
+            // copy starter content
+            copyDir.sync(source, destination);
+            console.log('Application created at: ' + destination);
+
+            // update package.json file
+            const packagePath = path.resolve(destination, 'package.json');
+            const pkgContent = fs.readFileSync(packagePath, 'utf8')
+                .replace(/{{name}}/g, answers.name)
+                .replace(/{{description}}/g, answers.description)
+                .replace(/{{author}}/g, answers.author);
+            fs.writeFileSync(packagePath, pkgContent);
+            console.log('Updated package.json');
+
+            // update the server/index.js
+            const indexPath = path.resolve(destination, 'server/index.js');
+            const indexContent = fs.readFileSync(indexPath, 'utf8')
+                .replace(/{{name}}/g, answers.name);
+            fs.writeFileSync(indexPath, indexContent);
+            console.log('Updated server/index.js');
+
+            // run npm install
+            process.stdout.write('Running npm install. Please wait.');
+            if (isWin) {
+                const intervalId = setInterval(() => process.stdout.write('.'), 1000);
+                childProcess.exec('npm install', { cwd: destination }, function(err, stdout, stderr) {
+                    clearInterval(intervalId);
+                    process.stdout.write('\r\n');
+                    console.log(stdout);
+                    console.error(stderr);
+                    if (err) {
+                        console.error(err);
+                    } else {
+                        console.log('Done');
+                    }
+                });
+            } else {
+                process.stdout.write('\n');
+                const child = childProcess.spawn('npm', ['install'], { cwd: destination });
+                child.stdout.on('data', data => process.stdout.write(data.toString()));
+                child.stderr.on('data', data => process.stderr.write(data.toString()));
+                child.on('exit', code => {
+                    if (parseInt(code) === 0) {
+                        console.log('Done.');
+                    } else {
+                        console.log('Completed with exit code: ' + code);
+                    }
+                });
+            }
         }
     })
     .catch(e => console.error(e.stack));
