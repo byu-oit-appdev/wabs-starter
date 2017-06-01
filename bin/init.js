@@ -50,6 +50,8 @@ inquirer.prompt(
                         answers.confirm = ans.confirm;
                         return answers;
                     });
+            } else {
+                answers.confirm = true;
             }
         } catch (e) {
             if (e.code !== 'ENOENT') return Promise.reject(e);
