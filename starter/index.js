@@ -15,6 +15,28 @@
  *    limitations under the License.
  **/
 'use strict';
+const fs            = require('fs');
+const os            = require('os');
+const path          = require('path');
+const pkg           = require('./package.json');
+
+// set app name
+process.env.APP_NAME = pkg.name;
+
+// read config file
+try {
+    const content = fs.readFileSync(path.resolve(os.homedir(), '.wabs/config'), 'utf8');
+    const data = JSON.parse(content);
+    const app = data[pkg.name];
+    if (app) {
+        process.env.CONSUMER_KEY = app.consumerKey;
+        process.env.CONSUMER_SECRET = app.consumerSecret;
+        process.env.ENCRYPT_SECRET = app.encryptSecret;
+    }
+} catch (e) {
+    if (e.code === 'ENOENT') throw Error('WABS configuration file not found.');
+    throw e;
+}
 
 // look at command line args to possibly modify environment
 const cliArgs = Array.from(process.argv).slice(2);
