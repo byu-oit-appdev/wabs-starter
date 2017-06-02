@@ -22,11 +22,11 @@ const path              = require('path');
 const wabsMw            = require('wabs-middleware');
 
 const app = express();
-const encryptSecret = 'this should be a strong password';
+const encryptSecret = process.env.ENCRYPT_SECRET;
 const wabs = wabsMw({
     appName: '{{name}}',
-    consumerKey: '',
-    consumerSecret: '',
+    consumerKey: process.env.CONSUMER_KEY,
+    consumerSecret: process.env.CONSUMER_SECRET,
     encryptSecret: encryptSecret
 });
 
