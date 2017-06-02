@@ -30,8 +30,12 @@ process.env.PROD_ENV = Number(process.env.NODE_ENV === 'production');
 
 // dev mode enable hot reload for server
 if (process.env.DEV_ENV) {
+    console.log('Starting in development mode.\n' +
+        '\tThe server will automatically restart when it crashes and when changes are made to server files.\n' +
+        '\tThe font-end web app will implement hot module reloading.');
     autoRestart();
 } else {
+    console.log('Starting in production mode.');
     require('./server/index');
 }
 
