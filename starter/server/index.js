@@ -24,7 +24,7 @@ const wabsMw            = require('wabs-middleware');
 const app = express();
 const encryptSecret = process.env.ENCRYPT_SECRET;
 const wabs = wabsMw({
-    appName: '{{name}}',
+    appName: process.env.APP_NAME,
     consumerKey: process.env.CONSUMER_KEY,
     consumerSecret: process.env.CONSUMER_SECRET,
     encryptSecret: encryptSecret
