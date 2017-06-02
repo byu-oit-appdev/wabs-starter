@@ -16,6 +16,7 @@
  **/
 'use strict';
 const childProcess  = require('child_process');
+const config        = require('./config');
 const copyDir       = require('copy-dir');
 const fs            = require('fs');
 const inquirer      = require('inquirer');
@@ -33,7 +34,7 @@ inquirer.prompt(
     .then(answers => {
         answers.destination = path.resolve(process.cwd(), answers.destination);
 
-        // check that the destination is empty
+        // check that the destination is empty or that writing to destination is OK
         try {
             const destinationFiles = fs.readdirSync(answers.destination);
             if (destinationFiles.length > 0) {
@@ -61,6 +62,16 @@ inquirer.prompt(
         return answers;
     })
     .then(answers => {
+        return inquirer.prompt([{ name: 'wso2', message: 'Will your application use WSO2?', type: confirm, default: true }])
+            .then(ans => {
+                answers.wso2 = ans.wso2;
+                if (answers.wso2) return config.prompt(answers.name);
+            })
+            .then(() => {
+                return answers;
+            });
+    })
+    .then(answers => {
         const source = path.resolve(__dirname, '../starter');
         const destination = answers.destination;
 
@@ -80,13 +91,6 @@ inquirer.prompt(
             fs.writeFileSync(packagePath, pkgContent);
             console.log('Updated package.json');
 
-            // update the server/index.js
-            const indexPath = path.resolve(destination, 'server/index.js');
-            const indexContent = fs.readFileSync(indexPath, 'utf8')
-                .replace(/{{name}}/g, answers.name);
-            fs.writeFileSync(indexPath, indexContent);
-            console.log('Updated server/index.js');
-
             // run npm install
             process.stdout.write('Running npm install. Please wait.');
             if (isWin) {
@@ -99,7 +103,7 @@ inquirer.prompt(
                     if (err) {
                         console.error(err);
                     } else {
-                        console.log('Done');
+                        done(destination);
                     }
                 });
             } else {
@@ -109,10 +113,7 @@ inquirer.prompt(
                 child.stderr.on('data', data => process.stderr.write(data.toString()));
                 child.on('exit', code => {
                     if (parseInt(code) === 0) {
-                        console.log('Done.');
-                        console.log('Navigate to the directory ' + destination + ' and run one of the following commands:\n' +
-                            '    Development: npm run dev\n' +
-                            '    Production: npm run prod\n');
+                        done(destination);
                     } else {
                         console.log('Completed with exit code: ' + code);
                     }
@@ -122,6 +123,12 @@ inquirer.prompt(
     })
     .catch(e => console.error(e.stack));
 
+function done(destination) {
+    console.log('App created at ' + destination);
+    console.log('Navigate to the directory ' + destination + ' and run one of the following commands:\n' +
+        '    Development: npm run dev\n' +
+        '    Production: npm run prod\n');
+}
 
 function required(value) {
     if (value.length === 0) return 'Input required';
