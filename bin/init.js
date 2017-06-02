@@ -110,6 +110,9 @@ inquirer.prompt(
                 child.on('exit', code => {
                     if (parseInt(code) === 0) {
                         console.log('Done.');
+                        console.log('Navigate to the directory ' + destination + ' and run on of the following commands:\n' +
+                            '    Development: npm run dev\n' +
+                            '    Production: npm run prod\n');
                     } else {
                         console.log('Completed with exit code: ' + code);
                     }
