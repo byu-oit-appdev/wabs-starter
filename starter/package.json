@@ -4,6 +4,8 @@
   "description": "{{description}}",
   "main": "server/index.js",
   "scripts": {
+    "dev": "node server/index.js --dev",
+    "prod": "node server/index.js",
     "start": "node server/index.js",
     "test": "mocha test"
   },
@@ -14,7 +16,7 @@
     "body-parser": "^1.17.1",
     "cookie-parser": "^1.4.3",
     "express": "^4.15.3",
-    "wabs-middleware": "github:byu-oit-appdev/wabs-middleware",
+    "wabs-middleware": "github:byu-oit/wabs-middleware",
     "webpack": "^2.6.1"
   },
   "wabs": true
