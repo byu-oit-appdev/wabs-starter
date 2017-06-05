@@ -62,7 +62,7 @@ inquirer.prompt(
         return answers;
     })
     .then(answers => {
-        return inquirer.prompt([{ name: 'wso2', message: 'Will your application use WSO2?', type: confirm, default: true }])
+        return inquirer.prompt([{ name: 'wso2', message: 'Will your application use WSO2?', type: 'confirm', default: true }])
             .then(ans => {
                 answers.wso2 = ans.wso2;
                 if (answers.wso2) return config.prompt(answers.name);
