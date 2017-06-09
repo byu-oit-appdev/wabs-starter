@@ -27,16 +27,39 @@ exports.prompt = function(name, rename) {
     const data = exports.read();
     const app = data[name] || {};
     if (rename) delete data[name];
-    return inquirer.prompt(
-        [
-            { name: 'consumerKey', message: 'Consumer key:', default: app.consumerKey || '', validate: required },
-            { name: 'consumerSecret', message: 'Consumer secret:', default: app.consumerSecret || '', validate: required },
-            { name: 'encryptSecret', message: 'Encryption password:', default: app.encryptSecret || '', validate: required }
-        ])
+
+    const questions = exports.questions(data[name]);
+    return inquirer.prompt(questions)
         .then(answers => {
             data[rename || name] = answers;
             exports.write(data);
         });
+};
+
+exports.questions = function(defaults) {
+    const questions = [
+        {
+            name: 'consumerKey',
+            message: 'Consumer key:',
+            validate: required
+        },
+        {
+            name: 'consumerSecret',
+            message: 'Consumer secret:',
+            validate: required
+        },
+        {
+            name: 'encryptSecret',
+            message: 'Encryption password:',
+            validate: required
+        }
+    ];
+    if (defaults) {
+        questions[0].default = defaults.consumerKey;
+        questions[1].default = defaults.consumerSecret;
+        questions[2].default = defaults.encryptSecret;
+    }
+    return questions;
 };
 
 exports.read = function() {
