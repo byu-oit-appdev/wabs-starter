@@ -13,6 +13,7 @@
   "author": "James Speirs <james_speirs@byu.edu>",
   "license": "Apache-2.0",
   "dependencies": {
+    "blessed": "^0.1.81",
     "byu-wabs-oauth": "^1.1.0",
     "chokidar": "^1.7.0",
     "cli-table": "^0.3.1",

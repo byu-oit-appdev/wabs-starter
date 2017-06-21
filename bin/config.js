@@ -20,47 +20,8 @@ const inquirer      = require('inquirer');
 const path          = require('path');
 const os            = require('os');
 
-const configDirectory = path.resolve(os.homedir(), '.wabs');
+const configDirectory = path.resolve(__dirname, '../');//path.resolve(os.homedir(), '.wabs');
 const configPath = path.resolve(configDirectory, 'config');
-
-exports.prompt = function(name, rename) {
-    const data = exports.read();
-    const app = data[name] || {};
-    if (rename) delete data[name];
-
-    const questions = exports.questions(data[name]);
-    return inquirer.prompt(questions)
-        .then(answers => {
-            data[rename || name] = answers;
-            exports.write(data);
-        });
-};
-
-exports.questions = function(defaults) {
-    const questions = [
-        {
-            name: 'consumerKey',
-            message: 'Consumer key:',
-            validate: required
-        },
-        {
-            name: 'consumerSecret',
-            message: 'Consumer secret:',
-            validate: required
-        },
-        {
-            name: 'encryptSecret',
-            message: 'Encryption password:',
-            validate: required
-        }
-    ];
-    if (defaults) {
-        questions[0].default = defaults.consumerKey;
-        questions[1].default = defaults.consumerSecret;
-        questions[2].default = defaults.encryptSecret;
-    }
-    return questions;
-};
 
 exports.read = function() {
     try {
@@ -83,8 +44,3 @@ exports.write = function(data) {
     const content = JSON.stringify(data, null, 2);
     fs.writeFileSync(configPath, content);
 };
-
-function required(value) {
-    if (value.length === 0) return 'Input required';
-    return true;
-}
