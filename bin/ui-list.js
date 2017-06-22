@@ -119,6 +119,11 @@ module.exports = function(options) {
         box.on('focus', () => {
             box.style.bg = colors.selected.bg;
             box.style.fg = colors.selected.fg;
+            emit('focus', {
+                box: box,
+                index: items.indexOf(item),
+                item: item
+            })
         });
 
         box.on('blur', () => {
@@ -157,21 +162,18 @@ module.exports = function(options) {
 
     factory.focus = function() {
         factory.purge();
-        if (items.length > 0 && factory.index !== -1) {
-            const index = factory.index;
-            const item = items[index];
-            const box = boxes.get(item);
+        if (factory.active) {
+            const box = boxes.get(factory.active);
             box.focus();
-            emit('focus', {
-                box: box,
-                index: index,
-                item: item
-            });
         } else {
             container.focus();
             emit('focus', null);
         }
         hasFocus = true;
+    };
+
+    factory.hide = function() {
+        container.hide();
     };
 
     factory.key = function(ar, callback) {
@@ -215,6 +217,10 @@ module.exports = function(options) {
 
             factory.index = index < items.length ? index : index - 1;
         }
+    };
+
+    factory.show = function() {
+        container.show();
     };
 
     factory.sort = function() {
