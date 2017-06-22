@@ -22,7 +22,9 @@ const Tabs          = require('./ui-tabs');
 
 module.exports = function(options) {
     const items = { _: [] };
+    const itemsCount = options.items ? options.items.length : 0;
     const tabs = Tabs();
+    const submitLabel = options.submit ? options.submit.label || 'Submit' : '';
     let active = false;
     let top = 0;
     let cancelBtn;
@@ -33,6 +35,8 @@ module.exports = function(options) {
         fg: colors.blur.fg,
     }));
     form.items = items;
+
+    const keys = function() { form.screen.instruction.keys.apply(form.screen.instruction, arguments)};
 
     const render = function() { form.screen.render() };
 
@@ -109,6 +113,17 @@ module.exports = function(options) {
                 input.style.fg = colors.selected.fg;
                 input.readInput();
                 tabs.index = index;
+
+                keys({
+                    up: index === 0 ? 'Cancel Button' : 'Previous',
+                    down: index + 1 < itemsCount ? 'Next' : submitLabel + ' Button',
+                    left: 'Cancel Button',
+                    right: submitLabel + ' Button',
+                    tab: 'Next',
+                    esc: 'Cancel Button',
+                    enter: 'Next'
+                });
+
                 render();
             });
 
@@ -120,7 +135,7 @@ module.exports = function(options) {
             input.key(['escape', 'enter', 'up', 'down', 'left', 'right', 'tab', 'S-tab'], (ch, key) => {
                 switch (key.name) {
                     case 'escape':
-                        form.cancel();
+                        cancel.focus();
                         render();
                         break;
                     case 'left':
@@ -155,96 +170,120 @@ module.exports = function(options) {
                 }
             });
 
-            input.key(['C-c'], (ch, key) => {
+            input.key(['C-c'], () => {
                 process.exit(0);
             });
         });
     }
 
-    if (options.submit) {
-        const box = blessed.box({
-            parent: form,
-            bg: colors.blur.bg,
-            fg: colors.blur.fg,
-            height: 1,
-            top: top
+    const box = blessed.box({
+        parent: form,
+        bg: colors.blur.bg,
+        fg: colors.blur.fg,
+        height: 1,
+        top: top
+    });
+    top += 2;
+
+    const submit = Button({
+        parent: box,
+        content: options.submit.label || 'Submit',
+        left: 0,
+        width: '50%-1',
+        mouse: true
+    });
+    submitBtn = submit;
+    tabs.push(submit);
+
+    const cancel = Button({
+        parent: box,
+        content: 'Cancel',
+        left: '50%+1',
+        mouse: true
+    });
+    cancelBtn = cancel;
+    tabs.push(cancel);
+
+
+    submitBtn.on('press', () => {
+        form.submit();
+        render();
+    });
+
+    submitBtn.on('focus', () => {
+        keys({
+            up: itemsCount > 0 ? "Previous" : '',
+            right: 'Cancel Button',
+            enter: submitLabel,
+            esc: 'Cancel Button',
+            tab: 'Next'
         });
-        top += 2;
+    });
 
-        const submit = Button({
-            parent: box,
-            content: options.submit.label || 'Submit',
-            left: 0,
-            width: '50%-1',
-            mouse: true
-        });
-        submitBtn = submit;
-        tabs.push(submit);
+    form.on('submit', options.submit.handler || options.submit);
 
-        submitBtn.on('press', () => {
-            form.submit();
-            render();
-        });
-
-        form.on('submit', options.submit.handler || options.submit);
-
-        submit.key(['escape', 'up', 'S-tab', 'right', 'tab'], (ch, key) => {
-            switch (key.name) {
-                case 'escape':
-                    form.cancel();
-                    render();
-                    break;
-                case 'up':
+    submit.key(['escape', 'up', 'S-tab', 'right', 'tab'], (ch, key) => {
+        switch (key.name) {
+            case 'escape':
+                cancel.focus();
+                break;
+            case 'up':
+                if (itemsCount > 0) {
                     tabs.previous();
                     render();
-                    break;
-                case 'right':
-                    tabs.next();
-                    render();
-                    break;
-                case 'tab':
-                    tabs[key.shift ? 'previous' : 'next']();
-                    render();
-                    break;
-            }
-        });
-
-        if (options.cancel) {
-            const cancel = Button({
-                parent: box,
-                content: 'Cancel',
-                left: '50%+1',
-                mouse: true
-            });
-            cancelBtn = cancel;
-            tabs.push(cancel);
-
-            cancel.on('press', () => {
-                form.cancel();
-                render();
-            });
-
-            form.on('cancel', options.cancel);
-
-            cancel.key(['escape', 'left', 'up', 'S-tab', 'tab'], (ch, key) => {
-                switch (key.name) {
-                    case 'escape':
-                    case 'left':
-                        tabs.previous();
-                        render();
-                        break;
-                    case 'up':
-                        items._last.input.focus();
-                        render();
-                        break;
-                    case 'tab':
-                        tabs[key.shift ? 'previous' : 'next']();
-                        render();
-                        break;
                 }
-            });
+                break;
+            case 'right':
+                tabs.next();
+                render();
+                break;
+            case 'tab':
+                tabs[key.shift ? 'previous' : 'next']();
+                render();
+                break;
         }
-    }
+    });
+
+    cancel.on('press', () => {
+        form.cancel();
+        render();
+    });
+
+    cancel.on('focus', () => {
+        keys({
+            up: options.items && options.items.length > 0 ? "Previous" : '',
+            left: submitLabel + ' Button',
+            enter: 'Cancel',
+            esc: 'Cancel',
+            tab: 'Next'
+        })
+    });
+
+    form.on('cancel', options.cancel);
+
+    cancel.key(['escape', 'left', 'up', 'S-tab', 'tab'], (ch, key) => {
+        switch (key.name) {
+            case 'escape':
+                form.cancel();
+                break;
+            case 'left':
+                tabs.previous();
+                render();
+                break;
+            case 'up':
+                if (items._last) {
+                    items._last.input.focus();
+                } else if (itemsCount > 0) {
+                    items._[itemsCount - 1].input.focus();
+                }
+                render();
+                break;
+            case 'tab':
+                tabs[key.shift ? 'previous' : 'next']();
+                render();
+                break;
+        }
+    });
 
     form.on('focus', () => {
         if (!active) {
