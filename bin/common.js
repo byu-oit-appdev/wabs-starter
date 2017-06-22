@@ -20,6 +20,7 @@ const colors        = require('./ui-colors');
 
 exports.button      = require('./ui-button');
 exports.colors      = require('./ui-colors');
+exports.instruction = require('./ui-instruction');
 exports.list        = require('./ui-list');
 exports.form        = require('./ui-form');
 exports.tabs        = require('./ui-tabs');
