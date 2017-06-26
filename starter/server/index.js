@@ -19,19 +19,15 @@ const cookieParser      = require('cookie-parser');     // required by WABS midd
 const bodyParser        = require('body-parser');       // required by WABS middleware
 const express           = require('express');
 const path              = require('path');
+const pkg               = require('../package.json');
 const wabsMw            = require('wabs-middleware');
 
+// create the express app and middleware
 const app = express();
-const encryptSecret = process.env.ENCRYPT_SECRET;
-const wabs = wabsMw({
-    appName: process.env.APP_NAME,
-    consumerKey: process.env.CONSUMER_KEY,
-    consumerSecret: process.env.CONSUMER_SECRET,
-    encryptSecret: encryptSecret
-});
+const wabs = wabsMw(pkg.name);
 
 // cookie parser needed for wabs authentication tools (required)
-app.use(cookieParser(encryptSecret));
+app.use(wabs.ready(config => cookieParser(config.encryptSecret)));
 
 // body parser needed for brownies (required)
 app.use(bodyParser.urlencoded({ extended: false, type: '*/x-www-form-urlencoded'}));
