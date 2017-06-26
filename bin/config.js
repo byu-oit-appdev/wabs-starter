@@ -20,8 +20,8 @@ const inquirer      = require('inquirer');
 const path          = require('path');
 const os            = require('os');
 
-const configDirectory = path.resolve(__dirname, '../');//path.resolve(os.homedir(), '.wabs');
-const configPath = path.resolve(configDirectory, 'config');
+const configDirectory = path.resolve(os.homedir(), '.wabs');
+const configPath = path.resolve(configDirectory, 'config.json');
 
 exports.read = function() {
     try {
