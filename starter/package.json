@@ -1,7 +1,7 @@
 {
   "name": "{{name}}",
   "version": "1.0.0",
-  "description": "{{description}}",
+  "description": "A WABS app",
   "main": "server/index.js",
   "scripts": {
     "dev": "node server/index.js --dev",
@@ -10,7 +10,7 @@
     "test": "mocha test"
   },
   "private": true,
-  "author": "{{author}}",
+  "author": "Brigham Young University Office of Information Technology",
   "license": "Apache-2.0",
   "dependencies": {
     "body-parser": "^1.17.1",
