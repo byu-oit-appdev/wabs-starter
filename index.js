@@ -18,6 +18,63 @@
 'use strict';
 const version       = require('./package.json').version;
 
+console.log('WABS Starter v' + version + '\n');
+
+const args = getCliArgs();
+const command = process.argv[2] || 'help';
+
+switch (command) {
+    case 'start':
+    case 'test':
+        require('./bin/docker')[command](args);
+        break;
+    case 'manage':
+        require('./bin/ui-main');
+        break;
+    case 'help':
+    default:
+        console.log('Usage:  wabs COMMAND' +
+            '\n\nA tool for managing local development for WABS full stack single page applications' +
+            '\n\nCommands:' +
+            '\n  manage  Start the WABS application management tool' +
+            '\n  start   Run a WABS application' +
+            '\n  test    Run the tests that are part of the WABS application' +
+            '\n\nRun \'wabs COMMAND --help\` for more information on a command.');
+        break;
+}
+
+
+
+function getCliArgs() {
+    const args = Array.prototype.slice.call(process.argv, 3);
+    const length = args.length;
+    const result = {
+        args: []
+    };
+    let key = '';
+
+    for (let i = 0; i < length; i++) {
+        const arg = args[i];
+        if (arg[0] === '-') {
+            key = arg.replace(/^-+/, '');
+            result[key] = true;
+        } else if (key) {
+            result[key] = arg;
+            key = '';
+        } else {
+            result.app = arg;
+            result.args = args.slice(i + 1);
+            break;
+        }
+    }
+
+    return result;
+}
+
+
+/*
+const version       = require('./package.json').version;
+
 console.log('WABS Starter (version ' + version + ')');
 
 const arg = process.argv[2];
@@ -30,4 +87,4 @@ switch(arg) {
         break;
     default:
         console.log('Command not defined: ' + arg + '. Try one of: app, init');
-}
+}*/
