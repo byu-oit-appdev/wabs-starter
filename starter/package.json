@@ -4,8 +4,7 @@
   "description": "A WABS app",
   "main": "server/index.js",
   "scripts": {
-    "dev": "node server/index.js --dev",
-    "prod": "node server/index.js",
+    "debug": "node --inspect-brk server/index.js",
     "start": "node server/index.js",
     "test": "mocha test"
   },
