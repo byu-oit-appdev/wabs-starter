@@ -1,12 +1,13 @@
 {
-  "name": "{{name}}",
+  "name": "wabs-starter-app",
   "version": "1.0.0",
   "description": "A WABS app",
   "main": "server/index.js",
   "scripts": {
     "debug": "node --inspect-brk server/index.js",
     "start": "node server/index.js",
-    "test": "mocha test"
+    "test": "mocha test/*.js",
+    "coverage": "nyc mocha test/*.js"
   },
   "private": true,
   "author": "Brigham Young University Office of Information Technology",
