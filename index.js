@@ -16,39 +16,46 @@
  *    limitations under the License.
  **/
 'use strict';
+const docker        = require('./bin/docker');
 const version       = require('./package.json').version;
 
 console.log('WABS Starter v' + version + '\n');
 
 const args = getCliArgs();
-const command = process.argv[2] || 'help';
+const command = args.command || 'help';
 
 switch (command) {
     case 'start':
+    case 'terminal':
     case 'test':
-        require('./bin/docker')[command](args);
+        docker[command](args);
         break;
     case 'manage':
         require('./bin/ui-main');
         break;
     case 'help':
-    default:
-        console.log('Usage:  wabs COMMAND' +
+        console.log('Usage:  wabs [COMMAND]' +
             '\n\nA tool for managing local development for WABS full stack single page applications' +
             '\n\nCommands:' +
-            '\n  manage  Start the WABS application management tool' +
-            '\n  start   Run a WABS application' +
-            '\n  test    Run the tests that are part of the WABS application' +
-            '\n\nRun \'wabs COMMAND --help\` for more information on a command.');
+            '\n  manage    Start the WABS application management tool' +
+            '\n  start     Run a WABS application' +
+            '\n  terminal  Start the docker container in an interactive terminal' +
+            '\n  test      Run the tests that are part of the WABS application' +
+            '\n\nRun \'wabs COMMAND --help\` for more information on one of these commands.' +
+            '\n\nAny other command will execute within the docker container. Omitting the command will start the container in an interactive terminal.');
+        break;
+    default:
+        docker.exec(process.argv.slice(2));
         break;
 }
 
 
 
 function getCliArgs() {
-    const args = Array.prototype.slice.call(process.argv, 3);
+    const args = Array.prototype.slice.call(process.argv, 2);
     const length = args.length;
     const result = {
+        command: '',
         args: []
     };
     let key = '';
@@ -61,9 +68,10 @@ function getCliArgs() {
         } else if (key) {
             result[key] = arg;
             key = '';
+        } else if (i === 0) {
+            result.command = arg;
         } else {
-            result.app = arg;
-            result.args = args.slice(i + 1);
+            result.args = args.slice(i);
             break;
         }
     }
