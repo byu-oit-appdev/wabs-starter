@@ -4,9 +4,10 @@
   "description": "A WABS app",
   "main": "server/index.js",
   "scripts": {
-    "debug": "node --inspect-brk server/index.js",
     "start": "node server/index.js",
+    "start:debug": "node --inspect-brk server/index.js",
     "test": "mocha test/*.js",
+    "test:debug": "mocha --debug-brk test/*.js",
     "coverage": "nyc mocha test/*.js"
   },
   "private": true,
