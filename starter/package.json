@@ -12,6 +12,11 @@
   "private": true,
   "author": "Brigham Young University Office of Information Technology",
   "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "nyc": "^10.0.0"
+  },
   "dependencies": {
     "body-parser": "^1.17.1",
     "cookie-parser": "^1.4.3",
