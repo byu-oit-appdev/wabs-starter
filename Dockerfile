@@ -1,6 +1,3 @@
 FROM node:8
 
 WORKDIR /var/wabs
-
-EXPOSE 8080
-EXPOSE 5858
