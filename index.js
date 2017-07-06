@@ -19,39 +19,14 @@
 const docker        = require('./bin/docker');
 const version       = require('./package.json').version;
 
+process.on('unhandledRejection', e => {
+    console.error(e.stack);
+    process.exit(1);
+});
+
 console.log('WABS Starter v' + version + '\n');
 
-const args = getCliArgs();
-const command = args.command || 'help';
-
-switch (command) {
-    case 'start':
-    case 'terminal':
-    case 'test':
-        docker[command](args);
-        break;
-    case 'manage':
-        require('./bin/ui-main');
-        break;
-    case 'help':
-        console.log('Usage:  wabs [COMMAND]' +
-            '\n\nA tool for managing local development for WABS full stack single page applications' +
-            '\n\nCommands:' +
-            '\n  manage    Start the WABS application management tool' +
-            '\n  start     Run a WABS application' +
-            '\n  terminal  Start the docker container in an interactive terminal' +
-            '\n  test      Run the tests that are part of the WABS application' +
-            '\n\nRun \'wabs COMMAND --help\` for more information on one of these commands.' +
-            '\n\nAny other command will execute within the docker container. Omitting the command will start the container in an interactive terminal.');
-        break;
-    default:
-        docker.exec(process.argv.slice(2));
-        break;
-}
-
-
-
-function getCliArgs() {
+const args = (function getCliArgs() {
     const args = Array.prototype.slice.call(process.argv, 2);
     const length = args.length;
     const result = {
@@ -77,22 +52,30 @@ function getCliArgs() {
     }
 
     return result;
-}
+})();
+const command = args.command || 'help';
 
-
-/*
-const version       = require('./package.json').version;
-
-console.log('WABS Starter (version ' + version + ')');
-
-const arg = process.argv[2];
-switch(arg) {
-    case 'app':
-        require('./bin/app');
+switch (command) {
+    case 'start':
+    case 'terminal':
+    case 'test':
+        docker[command](args);
         break;
-    case 'init':
-        require('./bin/init');
+    case 'manage':
+        require('./bin/ui-main');
+        break;
+    case 'help':
+        console.log('Usage:  wabs [COMMAND]' +
+            '\n\nA tool for managing local development for WABS full stack single page applications' +
+            '\n\nCommands:' +
+            '\n  manage    Start the WABS application management tool' +
+            '\n  start     Run a WABS application' +
+            '\n  terminal  Start the docker container in an interactive terminal' +
+            '\n  test      Run the tests that are part of the WABS application' +
+            '\n\nRun \'wabs COMMAND --help\` for more information on one of these commands.' +
+            '\n\nAny other command will execute within the docker container. Omitting the command will start the container in an interactive terminal.');
         break;
     default:
-        console.log('Command not defined: ' + arg + '. Try one of: app, init');
-}*/
+        docker.exec(process.argv.slice(2).join(' '));
+        break;
+}
