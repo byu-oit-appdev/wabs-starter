@@ -20,6 +20,6 @@
     "copy-dir": "^0.3.0",
     "dockerode": "^2.5.0",
     "dockerode-build": "^1.1.5",
-    "inquirer": "^3.0.6"
+    "wabs-middleware": "github:byu-oit/wabs-middleware"
   }
 }

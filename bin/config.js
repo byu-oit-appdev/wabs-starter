@@ -16,7 +16,6 @@
  **/
 'use strict';
 const fs            = require('fs');
-const inquirer      = require('inquirer');
 const path          = require('path');
 const os            = require('os');
 
