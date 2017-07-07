@@ -4,11 +4,13 @@
   "description": "A WABS app",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "start:debug": "node --inspect-brk server/index.js",
+    "start": "node index.js",
+    "dev": "nodemon --watch index.js",
     "test": "mocha test/*.js",
-    "test:debug": "mocha --debug-brk test/*.js",
-    "coverage": "nyc mocha test/*.js"
+    "coverage": "nyc mocha test/*.js",
+    "start:debug": "node --inspect-brk=0.0.0.0:$WABS_DEBUG_PORT index.js",
+    "dev:debug": "nodemon --inspect-brk=0.0.0.0:$WABS_DEBUG_PORT --watch index.js",
+    "test:debug": "mocha --inspect-brk=0.0.0.0:$WABS_DEBUG_PORT test/*.js"
   },
   "private": true,
   "author": "Brigham Young University Office of Information Technology",
@@ -16,13 +18,14 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
     "nyc": "^10.0.0"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
     "cookie-parser": "^1.4.3",
     "express": "^4.15.3",
-    "wabs-middleware": "github:byu-oit/wabs-middleware",
+    "byu-wabs": "^4.0.0",
     "webpack": "^2.6.1"
   },
   "wabs": true
