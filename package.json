@@ -8,8 +8,7 @@
   },
   "scripts": {
     "test": "mocha test",
-    "preinstall": "node ./scripts/pre-install",
-    "postinstall": "node ./scripts/post-install"
+    "postinstall": "docker rmi -f wabs-starter:latest && docker built -t wabs-starter:latest ."
   },
   "private": true,
   "author": "James Speirs <james_speirs@byu.edu>",
