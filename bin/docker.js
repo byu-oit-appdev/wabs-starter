@@ -20,7 +20,7 @@ const Docker    = require('dockerode');
 const fs        = require('fs');
 const path      = require('path');
 const spawn     = require('child_process').spawn;
-const wabsMw    = require('wabs-middleware');
+const wabs      = require('byu-wabs');
 
 const docker = new Docker();
 
@@ -144,7 +144,7 @@ function run(config, server) {
 
     console.log('Context: ' + pkg.name + '\n');
 
-    wabsMw.getOptions(pkg.name)
+    wabs.getOptions(pkg.name)
         .then(function(opts) {
 
             // environment variables
