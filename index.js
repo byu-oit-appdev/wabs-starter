@@ -61,9 +61,6 @@ switch (command) {
     case 'test':
         docker[command](args);
         break;
-    case 'manage':
-        require('./bin/ui-main');
-        break;
     case 'help':
         console.log('Usage:  wabs [COMMAND]' +
             '\n\nA tool for managing local development for WABS full stack single page applications' +
@@ -74,6 +71,12 @@ switch (command) {
             '\n  test      Run the tests that are part of the WABS application' +
             '\n\nRun \'wabs COMMAND --help\` for more information on one of these commands.' +
             '\n\nAny other command will execute within the docker container. Omitting the command will start the container in an interactive terminal.');
+        break;
+    case 'manage':
+        require('./bin/ui-main');
+        break;
+    case 'version':
+        console.log(version);
         break;
     default:
         docker.exec(process.argv.slice(2).join(' '));
