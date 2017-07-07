@@ -169,7 +169,7 @@ function run(config, server) {
 
                 const debugPort = config.debug === true ? '9229' : config.debug;
                 if (config.debug) {
-                    env.WABS_DEBUG = debugPort;
+                    env.WABS_DEBUG_PORT = debugPort;
                     args.push('-p', debugPort + ':' + debugPort);
                 }
             }
