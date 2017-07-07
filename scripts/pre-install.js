@@ -19,7 +19,8 @@
 const fs        = require('fs');
 
 try {
-    fs.accessSync('docker', fs.constants.X_OK)
+    fs.accessSync('docker', fs.constants.X_OK);
+    console.log('Pass check: docker installed and executable');
 } catch (e) {
     if (e.code === 'ENOENT') {
         console.error('Error: Missing required dependency: docker. Please install docker prior to installing wabs-starter.');
