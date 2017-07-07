@@ -59,7 +59,6 @@ switch (command) {
     case 'start':
     case 'terminal':
     case 'test':
-    case 'update':
         docker[command](args);
         break;
     case 'manage':
