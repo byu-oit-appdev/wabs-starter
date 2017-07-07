@@ -19,40 +19,48 @@ const cookieParser      = require('cookie-parser');     // required by WABS midd
 const bodyParser        = require('body-parser');       // required by WABS middleware
 const express           = require('express');
 const path              = require('path');
-const pkg               = require('../package.json');
 const wabsMw            = require('wabs-middleware');
 
-// create the express app and middleware
-const app = express();
-const wabs = wabsMw(pkg.name);
+module.exports = function(options) {
 
-// cookie parser needed for wabs authentication tools (required)
-app.use(wabs.ready(config => cookieParser(config.encryptSecret)));
+    // create the express app and middleware
+    const app = express();
+    const wabs = wabsMw(options);
 
-// body parser needed for brownies (required)
-app.use(bodyParser.urlencoded({ extended: false, type: '*/x-www-form-urlencoded'}));
-app.use(bodyParser.json());
+    app.use(function(req, res, next) {
+        next();
+    });
 
-// middleware for routes and adding req.wabs object, required for all other WABS middleware to function (required)
-app.use(wabs.init());
+    // cookie parser needed for wabs authentication tools (required)
+    app.use(cookieParser(options.encryptSecret));
 
-// add API routers here for your local REST API endpoints
-app.use('/api/example', require('./routers/example'));
+    // body parser needed for brownies (required)
+    app.use(bodyParser.urlencoded({ extended: false, type: '*/x-www-form-urlencoded'}));
+    app.use(bodyParser.json());
 
-// html5 routing for paths that should resolve to the index file (recommended)
-app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
+    // middleware for routes and adding req.wabs object, required for all other WABS middleware to function (required)
+    app.use(wabs.init());
 
-// static file routing for static files (recommended)
-app.use(express.static(path.resolve(__dirname, '../www/')));
+    // add API routers here for your local REST API endpoints
+    app.use('/api/example', require('./routers/example'));
 
-// catch any 404s to provide a beautified 404 response (recommended)
-app.use(function(req, res) { res.sendStatus(404); });
+    // html5 routing for paths that should resolve to the index file (recommended)
+    app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
 
-// catch any errors to provide a beautified 500 response (recommended)
-app.use(wabs.catch());
+    // static file routing for static files (recommended)
+    app.use(express.static(path.resolve(__dirname, '../www/')));
 
-// start the server listening on the specified port
-app.listen(3000, function(err) {
-    if (err) console.error(err.stack);
-    console.log('Listening on port 3000');
-});
+    // catch any 404s to provide a beautified 404 response (recommended)
+    app.use(function(req, res) { res.sendStatus(404); });
+
+    // catch any errors to provide a beautified 500 response (recommended)
+    app.use(wabs.catch());
+
+    // start the server listening on the specified port
+    const listener = app.listen(process.env.WABS_PORT, function(err) {
+        if (err) console.error(err.stack);
+        console.log('\nServer listening on port ' + listener.address().port + '\n');
+    });
+
+    return app;
+};
