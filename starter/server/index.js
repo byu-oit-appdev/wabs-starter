@@ -19,13 +19,13 @@ const cookieParser      = require('cookie-parser');     // required by WABS midd
 const bodyParser        = require('body-parser');       // required by WABS middleware
 const express           = require('express');
 const path              = require('path');
-const wabsMw            = require('wabs-middleware');
+const byuWabs           = require('byu-wabs');
 
 module.exports = function(options) {
 
     // create the express app and middleware
     const app = express();
-    const wabs = wabsMw(options);
+    const wabs = byuWabs(options);
 
     app.use(function(req, res, next) {
         next();
