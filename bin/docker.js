@@ -23,6 +23,9 @@ const spawn     = require('child_process').spawn;
 const wabs      = require('byu-wabs');
 
 const docker = new Docker();
+const version = require('../package.json').version;
+const imageNamePrefix = 'wabs-starter';
+const imageName = imageNamePrefix + ':' + version;
 
 exports.exec = function(command) {
     ensureImageExists(() => {
@@ -78,8 +81,9 @@ exports.terminal = function(args) {
 
 function buildWabsImage() {
     return new Promise(function(resolve, reject) {
+        console.log('Building new ' + imageNamePrefix + ' docker image\n');
         const dockerPath = path.resolve(__dirname, '../Dockerfile');
-        const stream = build(dockerPath, { t: 'wabs-starter:latest' });
+        const stream = build(dockerPath, { t: imageName });
 
         stream.pipe(process.stdout);
 
@@ -99,7 +103,7 @@ function ensureImageExists(callback) {
             if (image) {
                 callback();
             } else {
-                console.error('Unable to find docker image: wabs-starter:latest');
+                console.error('Unable to find docker image: ' + imageName);
                 process.exit(1);
             }
         });
@@ -127,10 +131,49 @@ function getPackageContent(dirPath) {
 
 function getWabsImage(build) {
     if (arguments.length === 0) build = true;
+
     return docker.listImages()
-        .then(images => images.filter(image => image && image.RepoTags && image.RepoTags.indexOf('wabs-starter:latest') !== -1)[0])
-        .then(image => {
-            if (image) return image;
+
+        // filter images
+        .then(images => {
+            return images.filter(image => {
+                if (!image || !image.RepoTags) return;
+                const length = image.RepoTags.length;
+                for (let i = 0; i < length; i++) {
+                    const tag = image.RepoTags[i];
+                    if (tag.indexOf(imageNamePrefix) === 0) return true;
+                }
+                return false;
+            });
+        })
+
+        // separate current image from old images, removing old
+        .then(images => {
+            const promises = [];
+            let current = null;
+
+            images.forEach(image => {
+                const length = image.RepoTags.length;
+                let found = false;
+                for (let i = 0; i < length; i++) {
+                    const tag = image.RepoTags[i];
+                    if (tag === imageName) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    current = image;
+                } else if (build) {
+                    promises.push(docker.getImage(image.Id).remove({ f: true }));
+                }
+            });
+
+            return Promise.all(promises).then(() => current);
+        })
+
+        .then(current => {
+            if (current) return current;
             if (build) return buildWabsImage();
         });
 }
@@ -179,7 +222,7 @@ function run(config, server) {
             Object.keys(env).forEach(key => args.push('-e', key));
 
             // docker image
-            args.push('wabs-starter:latest');
+            args.push(imageName);
 
             // command and command arguments
             if (config.command) args.push.apply(args, config.command.split(/\s+/));
