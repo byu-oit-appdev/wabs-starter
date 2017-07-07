@@ -1,5 +1,5 @@
 FROM node:8
 
-WORKDIR /var/wabs
+ENV WABS_PORT="8080" WABS_DEBUG_PORT="9229"
 
-RUN npm install -g npm-run
+WORKDIR /var/wabs
