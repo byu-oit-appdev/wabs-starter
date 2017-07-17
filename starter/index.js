@@ -24,4 +24,6 @@ process.on('unhandledRejection', e => {
     process.exit(1);
 });
 
+console.log('ENV: ' + process.env.NODE_ENV);
+
 wabs.getOptions(pkg.name).then(server);
