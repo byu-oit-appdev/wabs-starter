@@ -27,48 +27,7 @@ const version = require('../package.json').version;
 const imageNamePrefix = 'wabs-starter';
 const imageName = imageNamePrefix + ':' + version;
 
-exports.exec = function(command) {
-    ensureImageExists(() => {
-        run({ command: command });
-    });
-};
-
-exports.start = function(args) {
-    if (args.help) {
-        console.log('Usage:  wabs start [OPTIONS] [APP] ' +
-            '\n\nRun the defined WABS application' +
-            '\n\nOptions:' +
-            '\n  -b, --browser-sync  Run browser sync' +
-            '\n  -d, --debug [PORT]  The port to open for debugging. Defaults to 5858' +
-            '\n  -n, --nodemon       Restart the server on file changes' +
-            '\n  -p, --port [PORT]   The port to run the server on. Defaults to 8080');
-
-    } else {
-        ensureImageExists(() => {
-            const config = {
-                command: 'npm run ' + (args.nodemon || args.n ? 'nodemon' : 'start'),
-                debug: hasDebug(args) ? args.debug || args.d : '',
-                port: args.port || args.p
-            };
-            if (config.debug) config.command += ':debug';
-            if (args['browser-sync'] || args.b) process.env.BROWSER_SYNC = true;
-
-            run(config, true);
-        });
-    }
-};
-
-exports.test = function(args) {
-    if (args.help) {
-        console.log('Usage:  wabs test [OPTIONS] [APP] ' +
-            '\n\nRun the mocha tests for the defined WABS application' +
-            '\n\nOptions:' +
-            '\n  -d, --debug <port>   The port to open for debugging. Defaults to 5858' +
-            '\n  -p, --port <port>    The port to run the server on. Defaults to 8080');
-    }
-};
-
-exports.terminal = function(args) {
+exports.bash = function(args) {
     if (args.help) {
         console.log('Usage:  wabs terminal ' +
             '\n\nStart the docker container in an interactive terminal');
@@ -78,6 +37,60 @@ exports.terminal = function(args) {
         });
     }
 };
+
+exports.exec = function(command) {
+    ensureImageExists(() => run({ command: command }));
+};
+
+exports.run = function(args) {
+    if (args.help) {
+        help('run', 'run [OPTIONS] SCRIPT');
+    } else {
+        ensureImageExists(() => {
+            const config = { command: 'npm run ' + args.args.join(' '), port: args.port || args.p };
+            applyDebug(config, args);
+            run(config, true);
+        });
+    }
+};
+
+exports.start = function(args) {
+    if (args.help) {
+        help('start', 'start [OPTIONS]');
+    } else {
+        ensureImageExists(() => {
+            const config = { command: 'npm start', port: args.port || args.p };
+            applyDebug(config, args);
+            run(config, true);
+        });
+    }
+};
+
+exports.test = function(args) {
+    if (args.help) {
+        help('test', 'test [OPTIONS]');
+    } else {
+        ensureImageExists(() => {
+            const config = { command: 'npm test', port: args.port || args.p };
+            applyDebug(config, args);
+            run(config, true);
+        });
+    }
+};
+
+
+
+
+
+function applyDebug(config, args) {
+    if (hasArg(args, 'debug-brk', 'k')) {
+        config.debug = args['debug-brk'] || args.k;
+        process.env.WABS_INSPECT_CMD = '--inspect-brk';
+    } else if (hasArg(args, 'debug', 'd')) {
+        config.debug = args.debug || args.d;
+        process.env.WABS_INSPECT_CMD = '--inspect';
+    }
+}
 
 function buildWabsImage() {
     return new Promise(function(resolve, reject) {
@@ -178,11 +191,24 @@ function getWabsImage(build) {
         });
 }
 
-function hasDebug(args) {
-    return args.hasOwnProperty('debug') || args.hasOwnProperty('d');
+function hasArg(args) {
+    const length = arguments.length;
+    for (let i = 1; i < length; i++) {
+        if (args.hasOwnProperty(arguments[i])) return true;
+    }
+    return false;
 }
 
-function run(config, server) {
+function help(name, usage) {
+    console.log('Usage:  wabs ' + usage +
+        '\n\nWithin docker container execute npm ' + name +
+        '\n\nOptions:' +
+        '\n  -d, --debug [PORT]      The port to open for debugging. Defaults to 9229' +
+        '\n  -k, --debug-brk [PORT]  The port to open for debugging in break mode. Defaults to 9229' +
+        '\n  -p, --port [PORT]       The port to run the server on. Defaults to 8080');
+}
+
+function run(config) {
     const pkg = getPackageContent();
 
     console.log('Context: ' + pkg.name + '\n');
@@ -192,7 +218,7 @@ function run(config, server) {
 
             // environment variables
             const name = pkg.name.replace(/-/g, '_').toUpperCase();
-            const env = {};
+            const env = Object.assign({}, config.env);
             if (opts.hasOwnProperty('consumerKey')) env[name + '__CONSUMER_KEY'] = opts.consumerKey || '';
             if (opts.hasOwnProperty('consumerKey')) env[name + '__CONSUMER_SECRET'] = opts.consumerSecret || '';
             if (opts.hasOwnProperty('consumerKey')) env[name + '__ENCRYPT_SECRET'] = opts.encryptSecret || '';
@@ -204,17 +230,16 @@ function run(config, server) {
                 '-v', pkg.applicationPath + ':' + '/var/wabs'
             ];
 
-            // open ports
-            if (server) {
-                const port = config.port ? (config.port === true ? '8080' : config.port) : '8080';
-                env.WABS_PORT = port;
-                args.push('-p', port + ':' + port);
+            // open server port
+            const port = config.port ? (config.port === true ? '8080' : config.port) : '8080';
+            env.WABS_PORT = port;
+            args.push('-p', port + ':' + port);
 
+            // open debug/inspector port
+            if (config.debug) {
                 const debugPort = config.debug === true ? '9229' : config.debug;
-                if (config.debug) {
-                    env.WABS_DEBUG_PORT = debugPort;
-                    args.push('-p', debugPort + ':' + debugPort);
-                }
+                env.WABS_DEBUG_PORT = debugPort;
+                args.push('-p', debugPort + ':' + debugPort);
             }
 
             // docker arguments
