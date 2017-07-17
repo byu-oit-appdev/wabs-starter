@@ -23,8 +23,22 @@ process.on('unhandledRejection', e => {
     console.error(e.stack);
     process.exit(1);
 });
+/*
+const title = 'WABS Starter v' + version;
+const titleBar = (function() {
+    const length = title.length + 10;
+    let str = '';
+    while (str.length < length) str += '/';
+    return str;
+})();
+const titleSpacer = '//' + titleBar.substr(0, titleBar.length - 4).replace(/\//g, ' ') + '//';
 
-console.log('WABS Starter v' + version + '\n');
+console.log('\n' + titleBar);
+console.log(titleSpacer);
+console.log('//   ' + title + '   //');
+console.log(titleSpacer);
+console.log(titleBar + '\n');*/
+console.log(' ');
 
 const args = (function getCliArgs() {
     const args = Array.prototype.slice.call(process.argv, 2);
@@ -72,10 +86,11 @@ switch (command) {
             '\n  bash      Start the docker container in an interactive bash terminal' +
             '\n  help      Output this help message' +
             '\n  manage    Start the WABS application management tool' +
+            '\n  run       Within docker container execute npm run' +
             '\n  start     Within docker container execute npm start' +
             '\n  test      Within docker container execute npm test' +
             '\n\nRun \'wabs COMMAND --help\' for more information on one of these commands.' +
-            '\n\nAny other command will execute within the docker container.');
+            '\n\nAny other command will execute within the docker container as a bash command. For example you could try this command: wabs npm install');
         break;
     default:
         docker.exec(process.argv.slice(2).join(' '));
