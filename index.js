@@ -56,27 +56,26 @@ const args = (function getCliArgs() {
 const command = args.command || 'help';
 
 switch (command) {
+    case 'bash':
+    case 'run':
     case 'start':
-    case 'terminal':
     case 'test':
         docker[command](args);
+        break;
+    case 'manage':
+        require('./bin/ui-main');
         break;
     case 'help':
         console.log('Usage:  wabs [COMMAND]' +
             '\n\nA tool for managing local development for WABS full stack single page applications' +
             '\n\nCommands:' +
+            '\n  bash      Start the docker container in an interactive bash terminal' +
+            '\n  help      Output this help message' +
             '\n  manage    Start the WABS application management tool' +
-            '\n  start     Run a WABS application' +
-            '\n  terminal  Start the docker container in an interactive terminal' +
-            '\n  test      Run the tests that are part of the WABS application' +
-            '\n\nRun \'wabs COMMAND --help\` for more information on one of these commands.' +
-            '\n\nAny other command will execute within the docker container. Omitting the command will start the container in an interactive terminal.');
-        break;
-    case 'manage':
-        require('./bin/ui-main');
-        break;
-    case 'version':
-        console.log(version);
+            '\n  start     Within docker container execute npm start' +
+            '\n  test      Within docker container execute npm test' +
+            '\n\nRun \'wabs COMMAND --help\' for more information on one of these commands.' +
+            '\n\nAny other command will execute within the docker container.');
         break;
     default:
         docker.exec(process.argv.slice(2).join(' '));
