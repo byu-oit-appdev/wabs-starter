@@ -56,11 +56,5 @@ module.exports = function(options) {
     // catch any errors to provide a beautified 500 response (recommended)
     app.use(wabs.catch());
 
-    // start the server listening on the specified port
-    const listener = app.listen(process.env.WABS_PORT, function(err) {
-        if (err) console.error(err.stack);
-        console.log('\nServer listening on port ' + listener.address().port + '\n');
-    });
-
     return app;
 };
