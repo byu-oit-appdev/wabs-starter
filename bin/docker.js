@@ -249,7 +249,7 @@ function run(config) {
             ];
 
             // open ports
-            args.push('-p', config.port + ':' + config.port);
+            if (config.port) args.push('-p', config.port + ':' + config.port);
             if (config.debug) args.push('-p', config.debug + ':' + config.debug);
 
             // docker arguments
