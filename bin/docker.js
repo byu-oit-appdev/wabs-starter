@@ -47,8 +47,8 @@ exports.run = function(args) {
         help('run', 'run [OPTIONS] SCRIPT');
     } else {
         ensureImageExists(() => {
-            const config = { command: 'npm run ' + args.args.join(' '), port: args.port || args.p };
-            applyDebug(config, args);
+            const config = { command: 'npm run ' + args.args.join(' ') };
+            applyConfigArgs(config, args);
             run(config, true);
         });
     }
@@ -59,8 +59,8 @@ exports.start = function(args) {
         help('start', 'start [OPTIONS]');
     } else {
         ensureImageExists(() => {
-            const config = { command: 'npm start', port: args.port || args.p };
-            applyDebug(config, args);
+            const config = { command: 'npm start' };
+            applyConfigArgs(config, args);
             run(config, true);
         });
     }
@@ -71,8 +71,8 @@ exports.test = function(args) {
         help('test', 'test [OPTIONS]');
     } else {
         ensureImageExists(() => {
-            const config = { command: 'npm test', port: args.port || args.p };
-            applyDebug(config, args);
+            const config = { command: 'npm test' };
+            applyConfigArgs(config, args);
             run(config, true);
         });
     }
@@ -82,14 +82,31 @@ exports.test = function(args) {
 
 
 
-function applyDebug(config, args) {
+function applyConfigArgs(config, args) {
+    if (!config.env) config.env = {};
+    let debugMode;
+
+    // set the port
+    config.port = args.port || args.p;
+    if (config.port === true || !config.port) config.port = '8080';
+    config.env.WABS_PORT = config.port;
+
+    // set the debug port and mode
     if (hasArg(args, 'debug-brk', 'k')) {
         config.debug = args['debug-brk'] || args.k;
-        process.env.WABS_INSPECT_CMD = '--inspect-brk';
+        debugMode = '--inspect-brk';
     } else if (hasArg(args, 'debug', 'd')) {
         config.debug = args.debug || args.d;
-        process.env.WABS_INSPECT_CMD = '--inspect';
+        debugMode = '--inspect';
     }
+    if (debugMode) {
+        if (config.debug === true) config.debug = '9229';
+        config.env.WABS_INSPECT = debugMode + '=0.0.0.0:' + config.debug;
+        config.env.WABS_DEBUG_PORT = config.debug;
+    }
+
+    // set environment
+    config.env.NODE_ENV = hasArg(args, 'v', 'dev') ? 'development' : 'production';
 }
 
 function buildWabsImage() {
@@ -205,6 +222,7 @@ function help(name, usage) {
         '\n\nOptions:' +
         '\n  -d, --debug [PORT]      The port to open for debugging. Defaults to 9229' +
         '\n  -k, --debug-brk [PORT]  The port to open for debugging in break mode. Defaults to 9229' +
+        '\n  -v, --dev               Enable auto restarting the server and hot reloading on the browser.' +
         '\n  -p, --port [PORT]       The port to run the server on. Defaults to 8080');
 }
 
@@ -220,8 +238,8 @@ function run(config) {
             const name = pkg.name.replace(/-/g, '_').toUpperCase();
             const env = Object.assign({}, config.env);
             if (opts.hasOwnProperty('consumerKey')) env[name + '__CONSUMER_KEY'] = opts.consumerKey || '';
-            if (opts.hasOwnProperty('consumerKey')) env[name + '__CONSUMER_SECRET'] = opts.consumerSecret || '';
-            if (opts.hasOwnProperty('consumerKey')) env[name + '__ENCRYPT_SECRET'] = opts.encryptSecret || '';
+            if (opts.hasOwnProperty('consumerSecret')) env[name + '__CONSUMER_SECRET'] = opts.consumerSecret || '';
+            if (opts.hasOwnProperty('encryptSecret')) env[name + '__ENCRYPT_SECRET'] = opts.encryptSecret || '';
 
             const args = [
                 'run',
@@ -230,30 +248,23 @@ function run(config) {
                 '-v', pkg.applicationPath + ':' + '/var/wabs'
             ];
 
-            // open server port
-            const port = config.port ? (config.port === true ? '8080' : config.port) : '8080';
-            env.WABS_PORT = port;
-            args.push('-p', port + ':' + port);
-
-            // open debug/inspector port
-            if (config.debug) {
-                const debugPort = config.debug === true ? '9229' : config.debug;
-                env.WABS_DEBUG_PORT = debugPort;
-                args.push('-p', debugPort + ':' + debugPort);
-            }
+            // open ports
+            args.push('-p', config.port + ':' + config.port);
+            if (config.debug) args.push('-p', config.debug + ':' + config.debug);
 
             // docker arguments
             if (config.entrypoint) args.push('--entrypoint', config.entrypoint);
             Object.keys(env).forEach(key => args.push('-e', key));
-
             // docker image
             args.push(imageName);
 
             // command and command arguments
             if (config.command) args.push.apply(args, config.command.split(/\s+/));
 
+            // output the docker command
             console.log('\ndocker ' + args.join(' ') + '\n');
 
+            // start the docker container
             spawn('docker', args, {
                 env: env,
                 stdio: 'inherit'
