@@ -1,6 +1,6 @@
 {
   "name": "wabs-starter",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "web application starter kit",
   "main": "index.js",
   "bin": {
