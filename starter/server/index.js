@@ -52,6 +52,5 @@ module.exports = function(options) {
     // catch any errors to provide a beautified 500 response (recommended)
     app.use(wabs.catch());
 
-
     return app;
 };
