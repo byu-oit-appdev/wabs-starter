@@ -30,7 +30,7 @@ console.log('ENV: ' + process.env.NODE_ENV);
 wabs.getOptions(pkg.name)
     .then(options => {
         console.log(' ');
-        const devMode = process.env.NODE_ENV === 'development';
+        options.devMode = process.env.NODE_ENV === 'development';
         let app;
         let dirty;
 
@@ -48,7 +48,7 @@ wabs.getOptions(pkg.name)
             }
         });
 
-        if (devMode) {
+        if (options.devMode) {
             console.log('Starting server app hot reload\n');
 
             const chokidar = require('chokidar');
@@ -103,7 +103,7 @@ wabs.getOptions(pkg.name)
                 console.error('Could not load server app:');
                 console.error(err.stack + '\n');
 
-                if (devMode) {
+                if (options.devMode) {
                     console.error('The server is still running, you do not need to restart it. ' +
                         'Fix the error and save for automatic reload.\n');
                 }
