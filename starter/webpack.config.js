@@ -22,21 +22,7 @@ module.exports = {
         app: './www/js/app.js'
     },
     output: {
-        filename: '[name].js',
-        path: path.resolve(__dirname, 'build')
-    },
-    module: {
-        rules: [
-            {
-                test: /www\/.*\.js$/,
-                exclude: /(node_modules|bower_components)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['env']
-                    }
-                }
-            }
-        ]
+        filename: 'bundle.js',
+        path: __dirname
     }
 };
