@@ -16,6 +16,7 @@
  **/
 'use strict';
 const path          = require('path');
+const webpack       = require('webpack');
 
 module.exports = {
     entry: {
@@ -24,5 +25,9 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: __dirname
-    }
+    },
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
+    ]
 };
