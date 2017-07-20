@@ -27,6 +27,19 @@ module.exports = function(options) {
     const app = express();
     const wabs = byuWabs(options);
 
+    // webpack hot reload
+    if (options.devMode) {
+        const webpack = require('webpack');
+        const webpackConfig = require('../webpack.config');
+        const compiler = webpack(webpackConfig);
+
+        app.use(require("webpack-dev-middleware")(compiler, {
+            noInfo: true, publicPath: webpackConfig.output.publicPath
+        }));
+
+        app.use(require("webpack-hot-middleware")(compiler));
+    }
+
     // cookie parser needed for wabs authentication tools (required)
     app.use(cookieParser(options.encryptSecret));
 
