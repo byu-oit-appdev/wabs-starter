@@ -90,7 +90,9 @@ switch (command) {
             '\n  start     Within docker container execute npm start' +
             '\n  test      Within docker container execute npm test' +
             '\n\nRun \'wabs COMMAND --help\' for more information on one of these commands.' +
-            '\n\nAny other command will execute within the docker container as a bash command. For example you could try this command: wabs npm install');
+            '\n\nAny other command will execute within the docker container as a bash command in development mode; ' +
+            'initialize with -P or --prod to run the command in production mode. ' +
+            'For example you could try this command: wabs npm install');
         break;
     default:
         docker.exec(process.argv.slice(2).join(' '));

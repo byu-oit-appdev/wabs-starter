@@ -29,17 +29,29 @@ const imageName = imageNamePrefix + ':' + version;
 
 exports.bash = function(args) {
     if (args.help) {
-        console.log('Usage:  wabs terminal ' +
-            '\n\nStart the docker container in an interactive terminal');
+        console.log('Usage:  wabs bash [OPTIONS] ' +
+            '\n\nStart the docker container in an interactive terminal' +
+            '\n\nOptions:' +
+            '\n  -P, --prod   Disable auto restarting the server and hot reloading on the browser.');
     } else {
         ensureImageExists(() => {
-            run({ entrypoint: '/bin/bash' });
+            const config = {
+                entrypoint: '/bin/bash',
+                env: { NODE_ENV: hasArg(args, 'P', 'prod') ? 'production' : 'development' }
+            };
+            run(config);
         });
     }
 };
 
 exports.exec = function(command) {
-    ensureImageExists(() => run({ command: command }));
+    ensureImageExists(() => {
+        const config = {
+            command: command,
+            env: { NODE_ENV: hasArg(args, 'P', 'prod') ? 'production' : 'development' }
+        };
+        run(config)
+    });
 };
 
 exports.run = function(args) {
@@ -106,7 +118,7 @@ function applyConfigArgs(config, args) {
     }
 
     // set environment
-    config.env.NODE_ENV = hasArg(args, 'v', 'dev') ? 'development' : 'production';
+    config.env.NODE_ENV = hasArg(args, 'P', 'prod') ? 'production' : 'development';
 }
 
 function buildWabsImage() {
@@ -222,8 +234,8 @@ function help(name, usage) {
         '\n\nOptions:' +
         '\n  -d, --debug [PORT]      The port to open for debugging. Defaults to 9229' +
         '\n  -k, --debug-brk [PORT]  The port to open for debugging in break mode. Defaults to 9229' +
-        '\n  -v, --dev               Enable auto restarting the server and hot reloading on the browser.' +
-        '\n  -p, --port [PORT]       The port to run the server on. Defaults to 8080');
+        '\n  -p, --port [PORT]       The port to run the server on. Defaults to 8080' +
+        '\n  -P, --prod              Disable auto restarting the server and hot reloading on the browser.');
 }
 
 function run(config) {
