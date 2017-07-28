@@ -1,7 +1,7 @@
 {
     "name": "{{AppName}}",
     "version": "1.0.0",
-    "description": "A WABS app",
+    "description": "SPA for {{AppTitle}}",
     "main": "server/index.js",
     "scripts": {
         "start": "node $WABS_INSPECT index.js",
