@@ -52,7 +52,7 @@
 <!-- Add your site or application content here -->
 <div id="app" class="app-container">
 <byu-header full-width>
-    <span v-slot="'site-title'">AppTitle</span>
+    <span v-slot="'site-title'">{{AppTitle}}</span>
     <byu-search v-slot="'search'" action="https://www.google.com/#q=$1" method="get" placeholder="Search"></byu-search>
     <byu-user-info v-slot="'user'">
         <a v-slot="'login'" href="/wabs/login?success=http://localhost:3000">Sign In</a>
