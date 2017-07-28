@@ -311,15 +311,20 @@ const build = common.form({
         handler: function(data) {
             const dest = data.textbox;
             const src = path.resolve(__dirname, '../starter');
-            copydir(src, dest, function(err) {
-                if (err) {
-                    build.message(err.toString());
-                } else {
-                    build.message('App created at: ' + dest);
-                    store.actions.index = 0;
-                }
-                screen.render();
-            });
+
+            instruction.message('Please wait...');
+            screen.render();
+            setTimeout(function() {
+                copydir(src, dest, function(err) {
+                    if (err) {
+                        instruction.message(err.toString());
+                    } else {
+                        instruction.message('App created at: ' + dest);
+                        store.actions.index = 0;
+                    }
+                    screen.render();
+                });
+            }, 0);
         }
     },
     cancel: function() {
