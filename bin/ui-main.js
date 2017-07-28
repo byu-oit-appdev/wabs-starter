@@ -298,6 +298,9 @@ const build = common.form({
     },
     title: 'Build App',
     items: {
+        title: 'App Title',
+        author: 'Author Name',
+        email: 'Author Email',
         destination: {
             label: 'Destination Directory',
             onChange: value => {
@@ -309,13 +312,34 @@ const build = common.form({
     submit: {
         label: 'Build',
         handler: function(data) {
-            const dest = data.textbox;
+            const title = data.textbox[0];
+            const author = data.textbox[1];
+            const email = data.textbox[2];
+            const dest = data.textbox[3];
             const src = path.resolve(__dirname, '../starter');
+
+            instruction.message('Please wait...');
+            screen.render();
+
             copydir(src, dest, function(err) {
                 if (err) {
-                    build.message(err.toString());
+                    instruction.message(err.toString());
                 } else {
-                    build.message('App created at: ' + dest);
+                    const patterns = [
+                        { rx: /{{AppName}}/g, value: list.active.name },
+                        { rx: /{{AppTitle}}/g, value: title },
+                        { rx: /{{AuthorName}}/g, value: author },
+                        { rx: /{{AuthorEmail}}/g, value: email },
+                    ];
+
+                    ['package.json', 'www/index.html'].forEach(subpath => {
+                        const fullPath = path.resolve(dest, subpath);
+                        let content = fs.readFileSync(fullPath, 'utf8');
+                        patterns.forEach(pattern => content = content.replace(pattern.rx, pattern.value));
+                        fs.writeFileSync(fullPath, content, 'utf8');
+                    });
+
+                    instruction.message('App created at: ' + dest);
                     store.actions.index = 0;
                 }
                 screen.render();
@@ -350,7 +374,7 @@ build.message = function(dirPath) {
 };
 
 const buildDir = blessed.box({
-    top: 7,
+    top: 15,
     bg: colors.blur.bg,
     fg: colors.blur.fg,
     content: build.message()
