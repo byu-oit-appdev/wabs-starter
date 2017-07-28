@@ -46,9 +46,12 @@ exports.bash = function(args) {
 
 exports.exec = function(command) {
     ensureImageExists(() => {
+        const match = /^(?:-P)|(?:--prod) /.exec(command);
+        if (match) command = command.substr(match[0].length);
+
         const config = {
             command: command,
-            env: { NODE_ENV: hasArg(args, 'P', 'prod') ? 'production' : 'development' }
+            env: { NODE_ENV: match ? 'production' : 'development' }
         };
         run(config)
     });
