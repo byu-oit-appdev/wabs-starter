@@ -160,3 +160,5 @@ crashlytics-build.properties
 fabric.properties
 /.gitignore
 !/.gitignore
+
+www/assets
