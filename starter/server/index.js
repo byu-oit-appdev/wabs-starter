@@ -30,14 +30,13 @@ module.exports = function(options) {
     // webpack hot reload
     if (options.devMode) {
         const webpack = require('webpack');
-        const webpackConfig = require('../webpack.config');
-        const compiler = webpack(webpackConfig);
+        const webpackConfig = require('../config/webpack.config');
+        const webpackMWConfig = require('../config/webpack.middleware.config');
+        const webpackHotConfig = require('../config/webpack.hotmodule.config');
+        const compiler = webpack(Object.assign({}, webpackConfig, webpackHotConfig));
 
-        app.use(require("webpack-dev-middleware")(compiler, {
-            noInfo: true, publicPath: webpackConfig.output.publicPath
-        }));
-
-        app.use(require("webpack-hot-middleware")(compiler));
+        app.use(require("webpack-dev-middleware")(compiler, webpackMWConfig));
+        app.use(require("webpack-hot-middleware")(compiler, webpackHotConfig));
     }
 
     // cookie parser needed for wabs authentication tools (required)
@@ -51,7 +50,8 @@ module.exports = function(options) {
     app.use(wabs.init());
 
     // add API routers here for your local REST API endpoints
-    app.use('/api/example', require('./routers/example'));
+    app.use('/api', require('./routers/api'));
+
 
     // html5 routing for paths that should resolve to the index file (recommended)
     app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
