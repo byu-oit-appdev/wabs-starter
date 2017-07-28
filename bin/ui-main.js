@@ -3,6 +3,7 @@ const blessed       = require('blessed');
 const byuOauth      = require('byu-wabs-oauth');
 const common        = require('./common');
 const config        = require('./config');
+const copydir       = require('copy-dir');
 const fs            = require('fs');
 const path          = require('path');
 
@@ -308,7 +309,14 @@ const build = common.form({
     submit: {
         label: 'Build',
         handler: function(data) {
-
+            const dest = data.textbox;
+            const src = path.resolve(__dirname, '../starter');
+            copydir(src, dest, function(err) {
+                if (err) return build.message(err);
+                build.message('App created at: ' + dest);
+                store.actions.index = 0;
+                screen.render();
+            });
         }
     },
     cancel: function() {
