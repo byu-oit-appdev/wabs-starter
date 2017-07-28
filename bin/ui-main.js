@@ -312,9 +312,12 @@ const build = common.form({
             const dest = data.textbox;
             const src = path.resolve(__dirname, '../starter');
             copydir(src, dest, function(err) {
-                if (err) return build.message(err);
-                build.message('App created at: ' + dest);
-                store.actions.index = 0;
+                if (err) {
+                    build.message(err.toString());
+                } else {
+                    build.message('App created at: ' + dest);
+                    store.actions.index = 0;
+                }
                 screen.render();
             });
         }
