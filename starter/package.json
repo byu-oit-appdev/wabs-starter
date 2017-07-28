@@ -1,5 +1,5 @@
 {
-    "name": "{{AppTitle}}",
+    "name": "{{AppName}}",
     "version": "1.0.0",
     "description": "A WABS app",
     "main": "server/index.js",
