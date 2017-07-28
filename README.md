@@ -16,4 +16,4 @@ Execute the following command in the terminal and then follow the prompts.
 wabs init
 ```
 
-Once that's done then navigate to the directory where you full stack application was deployed and check out the README.md there.
+Once that's done then navigate to the directory where your full stack application was deployed and check out the README.md there.
