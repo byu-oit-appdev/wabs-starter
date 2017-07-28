@@ -1,5 +1,5 @@
 {
-    "name": "contact-info",
+    "name": "{{AppTitle}}",
     "version": "1.0.0",
     "description": "A WABS app",
     "main": "server/index.js",
@@ -10,7 +10,7 @@
         "coverage": "nyc mocha $WABS_INSPECT test/*.js"
     },
     "private": true,
-    "author": "Aaron Rasmussen <aaron_rasmussen@byu.edu>",
+    "author": "{{AuthorName}} <{{AuthorEmail}}>",
     "license": "Apache-2.0",
     "devDependencies": {
         "babel-core": "^6.25.0",
