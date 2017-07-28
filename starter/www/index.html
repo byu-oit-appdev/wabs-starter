@@ -1,3 +1,4 @@
+<!doctype html>
 <!--
   @license
     Copyright 2017 Brigham Young University
@@ -15,37 +16,66 @@
     limitations under the License.
 -->
 
-<!doctype html>
 <html class="no-js" lang="">
 <head>
     <meta charset="utf-8">
 
     <!-- page title and description -->
-    <title>Untitled</title>
+    <title>{{AppTitle}}</title>
     <meta name="description" content="">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/favicon.png">
 
     <!-- tell the browser that your page is designed for mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- add your stylesheets here -->
-    <!-- <link rel="stylesheet" href="/css/main.css"> -->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!-- any global scripts here -->
+
+    <!-- BYU Theme -->
+    <link rel="stylesheet" href="https://cdn.byu.edu/byu-theme-components/latest/byu-theme-components.min.css" />
+    <script async src="https://cdn.byu.edu/byu-theme-components/latest/byu-theme-components.js"></script>
+    <script async src="https://cdn.byu.edu/byu-card/latest/byu-card.min.js"></script>
+
+    <!-- Load Polymer -->
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="/bower_components/polymer/polymer.html">
+
+    <!-- your custom polymer components go here -->
+    <!-- <link rel="import" href="/web_components/my-component.html"> -->
 </head>
 <body>
 
 <!-- Add your site or application content here -->
-<p>Hello, <span id="name">...</span>!</p>
-<p>
-    <button id="login" onclick="byu.auth.login()">Log In</button>
-    <button id="logout" onclick="byu.auth.logout()">Log Out</button>
-</p>
+<div id="app" class="app-container">
+<byu-header full-width>
+    <span v-slot="'site-title'">AppTitle</span>
+    <byu-search v-slot="'search'" action="https://www.google.com/#q=$1" method="get" placeholder="Search"></byu-search>
+    <byu-user-info v-slot="'user'">
+        <a v-slot="'login'" href="/wabs/login?success=http://localhost:3000">Sign In</a>
+        <a v-slot="'logout'" href="/wabs/logout">Sign Out</a>
+        <user-info></user-info>
+    </byu-user-info>
+    <byu-menu v-slot="'nav'" collapsed>
+        <router-link to="/home">Home</router-link>
+        <router-link to="/about">About</router-link>
+        <router-link to="/info">Info</router-link>
+    </byu-menu>
+</byu-header>
+
+<div class="page-content">
+    <router-view></router-view>
+</div>
+
+<byu-footer></byu-footer>
+</div>
 
 <!-- add your JavaScript files here -->
 <script src="/wabs/script.js"></script> <!-- recommended to keep this script -->
-<script>
-    document.querySelector('#name').innerHTML = byu.user ? byu.user.preferredFirstName : 'stranger';
-    document.querySelector('#login').style.display = byu.user ? 'none': 'inline-block';
-    document.querySelector('#logout').style.display = byu.user ? 'inline-block' : 'none';
-</script>
+<script src="/assets/bundle.js"></script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
 <!--
