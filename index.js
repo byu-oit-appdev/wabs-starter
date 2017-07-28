@@ -16,21 +16,85 @@
  *    limitations under the License.
  **/
 'use strict';
+const docker        = require('./bin/docker');
 const version       = require('./package.json').version;
 
-console.log('WABS Starter (version ' + version + ')');
+process.on('unhandledRejection', e => {
+    console.error(e.stack);
+    process.exit(1);
+});
+/*
+const title = 'WABS Starter v' + version;
+const titleBar = (function() {
+    const length = title.length + 10;
+    let str = '';
+    while (str.length < length) str += '/';
+    return str;
+})();
+const titleSpacer = '//' + titleBar.substr(0, titleBar.length - 4).replace(/\//g, ' ') + '//';
 
-const arg = process.argv[2];
-switch(arg) {
-    case 'dev':
-        require('./bin/dev');
-        break;
-    case 'init':
-        require('./bin/init');
-        break;
+console.log('\n' + titleBar);
+console.log(titleSpacer);
+console.log('//   ' + title + '   //');
+console.log(titleSpacer);
+console.log(titleBar + '\n');*/
+console.log(' ');
+
+const args = (function getCliArgs() {
+    const args = Array.prototype.slice.call(process.argv, 2);
+    const length = args.length;
+    const result = {
+        command: '',
+        args: []
+    };
+    let key = '';
+
+    for (let i = 0; i < length; i++) {
+        const arg = args[i];
+        if (arg[0] === '-') {
+            key = arg.replace(/^-+/, '');
+            result[key] = true;
+        } else if (key) {
+            result[key] = arg;
+            key = '';
+        } else if (i === 0) {
+            result.command = arg;
+        } else {
+            result.args = args.slice(i);
+            break;
+        }
+    }
+
+    return result;
+})();
+const command = args.command || 'help';
+
+switch (command) {
+    case 'bash':
+    case 'run':
     case 'start':
-        require('./bin/start');
+    case 'test':
+        docker[command](args);
+        break;
+    case 'manage':
+        require('./bin/ui-main');
+        break;
+    case 'help':
+        console.log('Usage:  wabs [COMMAND]' +
+            '\n\nA tool for managing local development for WABS full stack single page applications' +
+            '\n\nCommands:' +
+            '\n  bash      Start the docker container in an interactive bash terminal' +
+            '\n  help      Output this help message' +
+            '\n  manage    Start the WABS application management tool' +
+            '\n  run       Within docker container execute npm run' +
+            '\n  start     Within docker container execute npm start' +
+            '\n  test      Within docker container execute npm test' +
+            '\n\nRun \'wabs COMMAND --help\' for more information on one of these commands.' +
+            '\n\nAny other command will execute within the docker container as a bash command in development mode; ' +
+            'initialize with -P or --prod to run the command in production mode. ' +
+            'For example you could try this command: wabs npm install');
         break;
     default:
-        console.log('Command not defined: ' + arg + '. Try one of: dev, init, start');
+        docker.exec(process.argv.slice(2).join(' '));
+        break;
 }

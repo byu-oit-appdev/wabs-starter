@@ -1,22 +1,31 @@
 {
-  "name": "{{name}}",
+  "name": "wabs-starter-app",
   "version": "1.0.0",
-  "description": "{{description}}",
+  "description": "A WABS app",
   "main": "server/index.js",
   "scripts": {
-    "start": "node server/index.js",
-    "test": "mocha test",
-    "postinstall": "bower install"
+    "start": "node $WABS_INSPECT index.js",
+    "dev": "nodemon $WABS_INSPECT --watch index.js",
+    "test": "mocha $WABS_INSPECT test/*.js",
+    "coverage": "nyc mocha $WABS_INSPECT test/*.js"
   },
   "private": true,
-  "author": "{{author}}",
+  "author": "Brigham Young University Office of Information Technology",
   "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chokidar": "^1.7.0",
+    "mocha": "^3.2.0",
+    "nyc": "^10.0.0",
+    "webpack": "^2.7.0",
+    "webpack-dev-middleware": "^1.11.0",
+    "webpack-hot-middleware": "^2.18.2"
+  },
   "dependencies": {
     "body-parser": "^1.17.1",
-    "bower": "^1.8.0",
+    "byu-wabs": "^4.0.1",
     "cookie-parser": "^1.4.3",
-    "express": "^4.15.3",
-    "wabs-middleware": "github:byu-oit-appdev/wabs-middleware"
+    "express": "^4.15.3"
   },
   "wabs": true
 }

@@ -15,31 +15,31 @@
  *    limitations under the License.
  **/
 'use strict';
-const fork          = require('child_process').fork;
+const fs            = require('fs');
 const path          = require('path');
-const util          = require('./util');
+const os            = require('os');
 
-console.log('Please wait...');
+const configDirectory = path.resolve(os.homedir(), '.wabs');
+const configPath = path.resolve(configDirectory, 'config.json');
 
-const appDirectory = util.getAppRoot();
-if (appDirectory === '') {
-    console.log('Could not find wabs full-stack application root directory in: ' + process.cwd());
-    process.exit(1);
-}
-
-const pkg = util.getPackage();
-const start = pkg.scripts.start;
-const fullPath = path.resolve(appDirectory, start.split(' ')[1]);
-
-fork(fullPath, start.split(' ').slice(2));
-
-/*
-// if the server exits with an error code then restart it
-instance.on('exit', code => {
-    if (code !== 0) {
-        instance = null;
-        restart();
-    } else if (isRestartKill) {
-        restart();
+exports.read = function() {
+    try {
+        const content = fs.readFileSync(configPath, 'utf8');
+        return JSON.parse(content);
+    } catch (e) {
+        if (e.code !== 'ENOENT') throw e;
+        return {};
     }
-});*/
+};
+
+exports.write = function(data) {
+    try {
+        fs.statSync(configDirectory);
+    } catch (e) {
+        if (e.code !== 'ENOENT') throw e;
+        fs.mkdirSync(configDirectory);
+    }
+
+    const content = JSON.stringify(data, null, 2);
+    fs.writeFileSync(configPath, content);
+};

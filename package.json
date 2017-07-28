@@ -1,6 +1,6 @@
 {
   "name": "wabs-starter",
-  "version": "0.10.0",
+  "version": "0.12.3",
   "description": "web application starter kit",
   "main": "index.js",
   "bin": {
@@ -13,8 +13,12 @@
   "author": "James Speirs <james_speirs@byu.edu>",
   "license": "Apache-2.0",
   "dependencies": {
+    "blessed": "^0.1.81",
+    "byu-wabs": "^4.0.0",
+    "byu-wabs-oauth": "^1.1.0",
     "chokidar": "^1.7.0",
     "copy-dir": "^0.3.0",
-    "inquirer": "^3.0.6"
+    "dockerode": "^2.5.0",
+    "dockerode-build": "^1.1.5"
   }
 }

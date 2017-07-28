@@ -19,44 +19,51 @@ const cookieParser      = require('cookie-parser');     // required by WABS midd
 const bodyParser        = require('body-parser');       // required by WABS middleware
 const express           = require('express');
 const path              = require('path');
-const wabsMw            = require('wabs-middleware');
+const byuWabs           = require('byu-wabs');
 
-const app = express();
-const encryptSecret = 'this should be a strong password';
-const wabs = wabsMw({
-    appName: '{{name}}',
-    consumerKey: '',
-    consumerSecret: '',
-    encryptSecret: encryptSecret
-});
+module.exports = function(options) {
 
-// cookie parser needed for wabs authentication tools (required)
-app.use(cookieParser(encryptSecret));
+    // create the express app and middleware
+    const app = express();
+    const wabs = byuWabs(options);
 
-// body parser needed for brownies (required)
-app.use(bodyParser.urlencoded({ extended: false, type: '*/x-www-form-urlencoded'}));
-app.use(bodyParser.json());
+    // webpack hot reload
+    if (options.devMode) {
+        const webpack = require('webpack');
+        const webpackConfig = require('../webpack.config');
+        const compiler = webpack(webpackConfig);
 
-// middleware for routes and adding req.wabs object, required for all other WABS middleware to function (required)
-app.use(wabs.init());
+        app.use(require("webpack-dev-middleware")(compiler, {
+            noInfo: true, publicPath: webpackConfig.output.publicPath
+        }));
 
-// add API routers here for your local REST API endpoints
-app.use('/api/example', require('./routers/example'));
+        app.use(require("webpack-hot-middleware")(compiler));
+    }
 
-// html5 routing for paths that should resolve to the index file (recommended)
-app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
+    // cookie parser needed for wabs authentication tools (required)
+    app.use(cookieParser(options.encryptSecret));
 
-// static file routing for static files (recommended)
-app.use(express.static(path.resolve(__dirname, '../www/')));
+    // body parser needed for brownies (required)
+    app.use(bodyParser.urlencoded({ extended: false, type: '*/x-www-form-urlencoded'}));
+    app.use(bodyParser.json());
 
-// catch any 404s to provide a beautified 404 response (recommended)
-app.use(function(req, res) { res.sendStatus(404); });
+    // middleware for routes and adding req.wabs object, required for all other WABS middleware to function (required)
+    app.use(wabs.init());
 
-// catch any errors to provide a beautified 500 response (recommended)
-app.use(wabs.catch());
+    // add API routers here for your local REST API endpoints
+    app.use('/api/example', require('./routers/example'));
 
-// start the server listening on the specified port
-app.listen(3000, function(err) {
-    if (err) console.error(err.stack);
-    console.log('Listening on port 3000');
-});
+    // html5 routing for paths that should resolve to the index file (recommended)
+    app.use(wabs.html5Router({ indexPath: 'www/index.html' }));
+
+    // static file routing for static files (recommended)
+    app.use(express.static(path.resolve(__dirname, '../www/')));
+
+    // catch any 404s to provide a beautified 404 response (recommended)
+    app.use(function(req, res) { res.sendStatus(404); });
+
+    // catch any errors to provide a beautified 500 response (recommended)
+    app.use(wabs.catch());
+
+    return app;
+};
