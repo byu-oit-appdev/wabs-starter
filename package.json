@@ -9,7 +9,6 @@
   "scripts": {
     "test": "mocha test"
   },
-  "private": true,
   "author": "James Speirs <james_speirs@byu.edu>",
   "license": "Apache-2.0",
   "dependencies": {
