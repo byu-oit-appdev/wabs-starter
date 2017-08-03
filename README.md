@@ -1,6 +1,106 @@
 # WABS Starter
 
-This is a terminal application that assists in the defining and creating of full stack single page web applications ([SPA](./starter/README.md)) that uses [WABS](https://github.com/byu-oit/wabs-middleware). The application can:
+A command line tool for managing and running single page web applications ([SPA](#what-is-a-single-page-app)) that use [WABS](https://github.com/byu-oit/wabs-middleware) inside of a docker container.
+
+## Installation
+
+```sh
+npm install -g @byu-oit/wabs-starter
+```
+
+## Create an App
+
+1. Define your WSO2 application credentials.
+
+    1. Set up a WSO2 application on [http://api.byu.edu/store](http://api.byu.edu/store).
+
+    2. Navigate to `My Applications` and add an application.
+
+        The callback URL should be `https://<your-domain>/wabs/oauth-code`. If you are developing on your local machine then your callback URL might look like this: `https://localhost:8080/wabs/oauth-code`.
+
+    3. Navigate to `My Subscriptions`, select your application from the dropdown menu, and generate the credentials. You will need these credentials soon.
+
+2. Start the [terminal application](#terminal-application): `wabs manage`
+
+    1. Select `Create a New App`.
+
+    2. Enter the name (numbers, letters, and dashes allowed).
+
+    3. Enter consumer key and consumer secret.
+
+    4. Enter encrypt secret. This is used to encrypt private data. You can choose any password, but it should be a good one.
+
+    5. Save the changes.
+
+    6. Select the option to `Build App`, fill out the form, and select `Build`.
+
+    7. Exit the terminal application: `Ctrl-C`.
+
+3. Navigate to the directory that the build was placed into.
+
+4. Install dependencies: `wabs npm install`.
+
+5. Start the application: `wabs start`
+
+For additional commands see the WABS CLI help: `wabs help`
+
+
+
+
+
+## What is a Single Page App?
+
+**Important!!** You should understand this section before your proceed.
+
+To promote consistency for BYU OIT Application Development the following definition for a single page app will be used:
+
+1. A single [WSO2 application](http://api.byu.edu/store).
+
+2. A single [Express server](http://expressjs.com).
+
+3. A single `index.html` file.
+
+4. A single domain name, for example: `my-app.byu.edu`.
+
+#### A Single WSO2 Application
+
+- WSO2 is our API store. If you want to make REST API calls then this is the tool you should be using.
+
+- You must create a WSO2 app at [http://api.byu.edu/store](http://api.byu.edu/store).
+
+- The WSO2 app must have a consumer key and consumer secret generated for it.
+
+#### A Single Express Server
+
+- We are using [Express server](http://expressjs.com) for our NodeJS servers.
+
+- The server uses [wabs-middleware](https://github.com/byu-oit/wabs-middleware) to manage CAS authentication, WSO2 authorization, and interoperability with legacy frameworks.
+
+- It serves static files from the `www` directory.
+
+- It defines API routes in the `server/routes` directory.
+
+#### A Single index.html File
+
+- There is one `index.html` file and it resides at `www/index.html`.
+
+- This is the root of your front-end application.
+
+- It loads all CSS and JavaScript files (whether statically or dynamically) that are necessary for the entire application.
+
+- It have multiple views. What is visible on the screen may change dramatically without navigating away from the `index.html` file.
+
+- It may support multiple routes. A route causes the URL to look different but it is still on the same `index.html` file. Views are often tied to routes.
+
+#### A Single Domain Name
+
+- The domain will serve up exactly one `index.html` file.
+
+- The domains `admissions.byu.edu` and `application.admissions.byu.edu` can point to two different single page apps.
+
+## Terminal Application
+
+The terminal application assists in the defining and creating of full stack single page web applications ([SPA](#what-is-a-single-page-app)) that uses [WABS](https://github.com/byu-oit/wabs-middleware). The terminal application can:
 
 - Build a new [SPA](./starter/README.md) from a template.
 
@@ -8,54 +108,11 @@ This is a terminal application that assists in the defining and creating of full
 
 - Test WSO2 credentials.
 
-## Installation
-
-```sh
-npm install -g byu-oit/wabs-starter
-```
-
-## Defining WSO2 Credentials
-
-If your [SPA](./starter/README.md) will not use WSO2 you can skip to the [Build](#build) section.
-
-WSO2 requires a consumer key and consumer secret (also known as a client id and client secret respectively). The [WABS middleware](https://github.com/byu-oit/wabs-middleware) will attempt to read this information from multiple locations automatically, in this order: 
-
-1. From [command line arguments](#) that are used to start the server.
- 
-2. From [environment variables](#).
-
-3. From [the file](#) located at `$HOME/.wabs/config.json`.
-
-4. From [the AWS parameter store](#).
-
-### Command Line Arguments
-
-After you've [built an SPA from the starter](#build) you can run your application using this command to specify the consumer key, consumer secret, and encrypt secret via command line arguments:
-
-```sh 
-node serve -c <consumer-key> -s <consumer-secret> -e <encrypt secret>
-```
-
-### Environment Variables
-
-
-
-
-Using the starter is a three step process.
-
-1. Build the [SPA](./starter/README.md) from the starter template. This is easily done using the [terminal application](#terminal-application).
-
-2. Navigate to the [SPA](./starter/README.md) directory.
-
-3. Run the command: `npm start`
-
-### Terminal Application
-
-To start the terminal application, open a terminal and type the following command: `wabs`.
+**Start the terminal application:** `wabs manage`
 
 ![App Screenshot](./terminal.png)
 
-- The keyboard can be used to navigate the terminal application. See the keyboard help at the bottom. 
+- The keyboard can be used to navigate the terminal application. See the keyboard help at the bottom.
 
 - The terminal application may support mouse usage, depending on what terminal you are using.
 
