@@ -179,6 +179,8 @@ function getWabsImage(build) {
 
                     child.stdout.pipe(process.stdout);
 
+                    child.on('error', err => reject(err));
+
                     child.on('close', code => {
                         if (code !== 0) return reject(code);
                         resolve();
@@ -304,10 +306,12 @@ function run(args, config) {
             console.log('\ndocker ' + args.join(' ') + '\n');
 
             // start the docker container
-            spawn(docker, args, {
+            const child = spawn(docker, args, {
                 env: env,
                 stdio: 'inherit'
             });
+
+            child.on('error', err => console.error(err));
 
         });
 }
@@ -330,6 +334,7 @@ function promisifyChild(child) {
 
         child.on('error', err => {
             result.error = err;
+            reject(err);
         });
 
         child.on('close', (code) => {
