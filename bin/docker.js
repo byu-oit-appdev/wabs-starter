@@ -15,14 +15,11 @@
  *    limitations under the License.
  **/
 'use strict';
-const build     = require('dockerode-build');
-const Docker    = require('dockerode');
 const fs        = require('fs');
 const path      = require('path');
 const spawn     = require('child_process').spawn;
 const wabs      = require('byu-wabs');
 
-const docker = new Docker();
 const version = require('../package.json').version;
 const imageNamePrefix = 'wabs-starter';
 const imageName = imageNamePrefix + ':' + version;
@@ -39,7 +36,7 @@ exports.bash = function(args) {
                 entrypoint: '/bin/bash',
                 env: { NODE_ENV: hasArg(args, 'P', 'prod') ? 'production' : 'development' }
             };
-            run(config);
+            run(args, config);
         });
     }
 };
@@ -53,7 +50,7 @@ exports.exec = function(command) {
             command: command,
             env: { NODE_ENV: match ? 'production' : 'development' }
         };
-        run(config)
+        run(args, config)
     });
 };
 
@@ -64,7 +61,7 @@ exports.run = function(args) {
         ensureImageExists(() => {
             const config = { command: 'npm run ' + args.args.join(' ') };
             applyConfigArgs(config, args);
-            run(config, true);
+            run(args, config);
         });
     }
 };
@@ -76,7 +73,7 @@ exports.start = function(args) {
         ensureImageExists(() => {
             const config = { command: 'npm start' };
             applyConfigArgs(config, args);
-            run(config, true);
+            run(args, config);
         });
     }
 };
@@ -88,16 +85,150 @@ exports.test = function(args) {
         ensureImageExists(() => {
             const config = { command: 'npm test' };
             applyConfigArgs(config, args);
-            run(config, true);
+            run(args, config);
         });
     }
 };
 
 
+/**
+ * Take words with spaces and convert to single camel-case word.
+ * @param {string} str
+ * @returns {string}
+ */
+function camelize(str) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+        return index === 0 ? letter.toLowerCase() : letter.toUpperCase();
+    }).replace(/\s+/g, '');
+}
 
+/**
+ * Ensure that the wabs-starter image exists before calling the callback
+ * @param {Function} callback
+ */
+function ensureImageExists(callback) {
+    getWabsImage(true)
+        .then(callback)
+        .catch(err => console.error(err.stack));
+}
 
+/**
+ * Traverse upward in the directory until a package.json is found where property "wabs" is true.
+ * @param {string} [dirPath] Start directory.
+ * @returns {Object} package.json object
+ */
+function getPackageContent(dirPath) {
+    if (arguments.length === 0) dirPath = process.cwd();
+    let prev;
+    do {
+        prev = dirPath;
+        try {
+            const content = fs.readFileSync(path.resolve(dirPath, 'package.json'), 'utf8');
+            const data = JSON.parse(content);
+            if (data.wabs) {
+                data.applicationPath = dirPath;
+                return data;
+            }
+        } catch (e) {}
+        dirPath = path.resolve(dirPath, '..');
+    } while (prev !== dirPath);
 
-function applyConfigArgs(config, args) {
+    console.error('Error: The current directory (' + process.cwd() + ') is not part of a WABS full stack application.');
+    process.exit(1);
+}
+
+/**
+ * Get the wabs-start image that is the correct version and build new version if needed.
+ * @param {boolean} [build=false] Set to true to cause an image build to occur if not found.
+ * @returns {Promise}
+ */
+function getWabsImage(build) {
+
+    const child = spawn('docker', ['images']);
+    return promisifyChild(child)
+        .then(data => {
+            const parsed = parse(data.stdout);
+            return parsed.filter(item => item.repository === imageNamePrefix && item.tag === version)[0];
+        })
+        .then(image => {
+            if (image) {
+                console.log('Found ' + imageNamePrefix + ' image.\n');
+
+            } else if (build) {
+                console.log('Building new ' + imageNamePrefix + ' docker image\n');
+
+                const dockerPath = path.resolve(__dirname, '..');
+                const promise = new Promise((resolve, reject) => {
+                    const child = spawn('docker', ['build', '-t', imageNamePrefix + ':' + version, dockerPath]);
+
+                    child.stdout.pipe(process.stdout);
+
+                    child.on('close', code => {
+                        if (code !== 0) return reject(code);
+                        resolve();
+                    });
+                });
+
+                return promise.then(() => getWabsImage(false));
+
+            } else {
+                return Promise.reject(Error('Unable find nor create wabs-starter image.'));
+            }
+        });
+}
+
+function hasArg(args) {
+    const length = arguments.length;
+    for (let i = 1; i < length; i++) {
+        if (args.hasOwnProperty(arguments[i])) return true;
+    }
+    return false;
+}
+
+function help(name, usage) {
+    console.log('Usage:  wabs ' + usage +
+        '\n\nWithin docker container execute npm ' + name +
+        '\n\nOptions:' +
+        '\n  -d, --debug [PORT]      The port to open for debugging. Defaults to 9229' +
+        '\n  -k, --debug-brk [PORT]  The port to open for debugging in break mode. Defaults to 9229' +
+        '\n  -p, --port [PORT]       The port to run the server on. Defaults to 8080' +
+        '\n  -P, --prod              Disable auto restarting the server and hot reloading on the browser.');
+}
+
+function parse(data) {
+    const columns = [];
+    const lines = data.split('\n');
+    const results = [];
+
+    // determine title spacing
+    const rxTitles = /[A-Z ]+?(?:\s{2,}|$)/g;
+    const titleLine = lines.shift();
+    let match;
+    while (match = rxTitles.exec(titleLine)) {
+        columns.push(camelize(match[0].replace(/\s+$/, '').toLowerCase()));
+    }
+
+    lines.forEach(line => {
+        const rxColumns = /[\S\s]+?(?:\s{2,}|$)/g;
+        const o = {};
+        let match;
+        let index = 0;
+        let content = false;
+
+        while (match = rxColumns.exec(line)) {
+            content = true;
+            o[columns[index++]] = match[0].replace(/\s+$/, '').toLowerCase();
+        }
+        if (content) results.push(o);
+    });
+
+    return results;
+}
+
+function run(args, config) {
+    const pkg = getPackageContent();
+    console.log('Context: ' + pkg.name + '\n');
+
     if (!config.env) config.env = {};
     let debugMode;
 
@@ -122,129 +253,6 @@ function applyConfigArgs(config, args) {
 
     // set environment
     config.env.NODE_ENV = hasArg(args, 'P', 'prod') ? 'production' : 'development';
-}
-
-function buildWabsImage() {
-    return new Promise(function(resolve, reject) {
-        console.log('Building new ' + imageNamePrefix + ' docker image\n');
-        const dockerPath = path.resolve(__dirname, '../Dockerfile');
-        const stream = build(dockerPath, { t: imageName });
-
-        stream.pipe(process.stdout);
-
-        stream.on('error', err => {
-            reject(err);
-        });
-
-        stream.on('complete', () => {
-            getWabsImage(false).then(resolve);
-        });
-    });
-}
-
-function ensureImageExists(callback) {
-    getWabsImage()
-        .then(image => {
-            if (image) {
-                callback();
-            } else {
-                console.error('Unable to find docker image: ' + imageName);
-                process.exit(1);
-            }
-        });
-}
-
-function getPackageContent(dirPath) {
-    if (arguments.length === 0) dirPath = process.cwd();
-    let prev;
-    do {
-        prev = dirPath;
-        try {
-            const content = fs.readFileSync(path.resolve(dirPath, 'package.json'), 'utf8');
-            const data = JSON.parse(content);
-            if (data.wabs) {
-                data.applicationPath = dirPath;
-                return data;
-            }
-        } catch (e) {}
-        dirPath = path.resolve(dirPath, '..');
-    } while (prev !== dirPath);
-
-    console.error('Error: The current directory (' + process.cwd() + ') is not part of a WABS full stack application.');
-    process.exit(1);
-}
-
-function getWabsImage(build) {
-    if (arguments.length === 0) build = true;
-
-    return docker.listImages()
-
-        // filter images
-        .then(images => {
-            return images.filter(image => {
-                if (!image || !image.RepoTags) return;
-                const length = image.RepoTags.length;
-                for (let i = 0; i < length; i++) {
-                    const tag = image.RepoTags[i];
-                    if (tag.indexOf(imageNamePrefix) === 0) return true;
-                }
-                return false;
-            });
-        })
-
-        // separate current image from old images, removing old
-        .then(images => {
-            const promises = [];
-            let current = null;
-
-            images.forEach(image => {
-                const length = image.RepoTags.length;
-                let found = false;
-                for (let i = 0; i < length; i++) {
-                    const tag = image.RepoTags[i];
-                    if (tag === imageName) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) {
-                    current = image;
-                } else if (build) {
-                    promises.push(docker.getImage(image.Id).remove({ f: true }));
-                }
-            });
-
-            return Promise.all(promises).then(() => current);
-        })
-
-        .then(current => {
-            if (current) return current;
-            if (build) return buildWabsImage();
-        });
-}
-
-function hasArg(args) {
-    const length = arguments.length;
-    for (let i = 1; i < length; i++) {
-        if (args.hasOwnProperty(arguments[i])) return true;
-    }
-    return false;
-}
-
-function help(name, usage) {
-    console.log('Usage:  wabs ' + usage +
-        '\n\nWithin docker container execute npm ' + name +
-        '\n\nOptions:' +
-        '\n  -d, --debug [PORT]      The port to open for debugging. Defaults to 9229' +
-        '\n  -k, --debug-brk [PORT]  The port to open for debugging in break mode. Defaults to 9229' +
-        '\n  -p, --port [PORT]       The port to run the server on. Defaults to 8080' +
-        '\n  -P, --prod              Disable auto restarting the server and hot reloading on the browser.');
-}
-
-function run(config) {
-    const pkg = getPackageContent();
-
-    console.log('Context: ' + pkg.name + '\n');
 
     wabs.getOptions(pkg.name)
         .then(function(opts) {
@@ -286,4 +294,35 @@ function run(config) {
             });
 
         });
+}
+
+function promisifyChild(child) {
+    return new Promise(function(resolve, reject) {
+        const result = { stdout: '', stderr: '', common: '' };
+
+        child.stdout.on('data', (data) => {
+            data = data.toString();
+            result.stdout += data;
+            result.common += data;
+        });
+
+        child.stderr.on('data', (data) => {
+            data = data.toString();
+            result.stderr += data;
+            result.common += data;
+        });
+
+        child.on('error', err => {
+            result.error = err;
+        });
+
+        child.on('close', (code) => {
+            result.code = code;
+            if (code === 0) return resolve(result);
+
+            console.log(result.common);
+            const err = result.error || Error('Error processing stream: ' + code);
+            reject(err);
+        });
+    });
 }
