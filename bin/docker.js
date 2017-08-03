@@ -108,7 +108,7 @@ function dockerCommandPath() {
     if (!isOSX) return command;
 
     try {
-        const stdout = execSync('which docker');
+        const stdout = execSync('which docker').toString();
         if (!/^which/.test(stdout)) command = stdout;
     } catch (e) {
         throw Error('Cannot find "docker" command');
