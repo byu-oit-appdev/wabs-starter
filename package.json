@@ -1,6 +1,6 @@
 {
   "name": "@byu-oit/wabs-starter",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "web application starter kit",
   "main": "index.js",
   "bin": {
