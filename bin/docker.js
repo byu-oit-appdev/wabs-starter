@@ -15,12 +15,13 @@
  *    limitations under the License.
  **/
 'use strict';
-const exists    = require('command-exists');
-const fs        = require('fs');
-const path      = require('path');
-const spawn     = require('child_process').spawn;
-const wabs      = require('byu-wabs');
+const exists                = require('command-exists');
+const fs                    = require('fs');
+const path                  = require('path');
+const { spawn, execSync }   = require('child_process');
+const wabs                  = require('byu-wabs');
 
+const docker = dockerCommandPath();
 const version = require('../package.json').version;
 const imageNamePrefix = 'wabs-starter';
 const imageName = imageNamePrefix + ':' + version;
@@ -100,12 +101,28 @@ function camelize(str) {
     }).replace(/\s+/g, '');
 }
 
+function dockerCommandPath() {
+    let command = 'docker';
+
+    const isOSX = /darwin/.test(require('os').platform());
+    if (!isOSX) return command;
+
+    try {
+        const stdout = execSync('which docker');
+        if (!/^which/.test(stdout)) command = stdout;
+    } catch (e) {
+        throw Error('Cannot find "docker" command');
+    }
+
+    return command;
+}
+
 /**
  * Ensure that the wabs-starter image exists before calling the callback
  * @param {Function} callback
  */
 function ensureImageExists(callback) {
-    return exists('docker')
+    return exists(docker)
         .then(() => getWabsImage(true), () => { throw Error('Command "docker" is not defined. Is it installed? Is it running?'); })
         .then(callback)
         .catch(err => console.error(err.stack));
@@ -143,7 +160,7 @@ function getPackageContent(dirPath) {
  */
 function getWabsImage(build) {
 
-    const child = spawn('docker', ['images']);
+    const child = spawn(docker, ['images']);
     return promisifyChild(child)
         .then(data => {
             const parsed = parse(data.stdout);
@@ -158,7 +175,7 @@ function getWabsImage(build) {
 
                 const dockerPath = path.resolve(__dirname, '..');
                 const promise = new Promise((resolve, reject) => {
-                    const child = spawn('docker', ['build', '-t', imageNamePrefix + ':' + version, dockerPath]);
+                    const child = spawn(docker, ['build', '-t', imageNamePrefix + ':' + version, dockerPath]);
 
                     child.stdout.pipe(process.stdout);
 
@@ -287,7 +304,7 @@ function run(args, config) {
             console.log('\ndocker ' + args.join(' ') + '\n');
 
             // start the docker container
-            spawn('docker', args, {
+            spawn(docker, args, {
                 env: env,
                 stdio: 'inherit'
             });
