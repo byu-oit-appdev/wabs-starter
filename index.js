@@ -70,6 +70,10 @@ const args = (function getCliArgs() {
 const command = args.command || 'help';
 
 switch (command) {
+    case 'path':
+        console.log(process.env.PATH);
+        console.log(require('child_process').execSync('which docker').toString());
+        break;
     case 'bash':
     case 'run':
     case 'start':
