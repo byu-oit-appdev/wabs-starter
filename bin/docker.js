@@ -15,6 +15,7 @@
  *    limitations under the License.
  **/
 'use strict';
+const exists    = require('command-exists');
 const fs        = require('fs');
 const path      = require('path');
 const spawn     = require('child_process').spawn;
@@ -60,7 +61,6 @@ exports.run = function(args) {
     } else {
         ensureImageExists(() => {
             const config = { command: 'npm run ' + args.args.join(' ') };
-            applyConfigArgs(config, args);
             run(args, config);
         });
     }
@@ -72,7 +72,6 @@ exports.start = function(args) {
     } else {
         ensureImageExists(() => {
             const config = { command: 'npm start' };
-            applyConfigArgs(config, args);
             run(args, config);
         });
     }
@@ -84,7 +83,6 @@ exports.test = function(args) {
     } else {
         ensureImageExists(() => {
             const config = { command: 'npm test' };
-            applyConfigArgs(config, args);
             run(args, config);
         });
     }
@@ -107,7 +105,8 @@ function camelize(str) {
  * @param {Function} callback
  */
 function ensureImageExists(callback) {
-    getWabsImage(true)
+    return exists('docker')
+        .then(() => getWabsImage(true), () => { throw Error('Command "docker" is not defined. Is it installed? Is it running?'); })
         .then(callback)
         .catch(err => console.error(err.stack));
 }
