@@ -16,6 +16,7 @@
     "byu-wabs": "^4.0.0",
     "byu-wabs-oauth": "^1.1.0",
     "chokidar": "^1.7.0",
+    "command-exists": "^1.2.2",
     "copy-dir": "^0.3.0"
   }
 }
