@@ -16,7 +16,7 @@
  *    limitations under the License.
  **/
 'use strict';
-const docker        = require('./bin/docker');
+const commands      = require('./bin/commands');
 const version       = require('./package.json').version;
 
 process.on('unhandledRejection', e => {
@@ -74,7 +74,7 @@ switch (command) {
     case 'run':
     case 'start':
     case 'test':
-        docker[command](args);
+        commands[command](args);
         break;
     case 'manage':
         require('./bin/ui-main');
@@ -95,6 +95,6 @@ switch (command) {
             'For example you could try this command: wabs npm install');
         break;
     default:
-        docker.exec(process.argv.slice(2).join(' '));
+        commands.exec(process.argv.slice(2).join(' '));
         break;
 }
