@@ -17,12 +17,14 @@
 'use strict';
 const exists                = require('command-exists');
 const fs                    = require('fs');
+const os                    = require('os');
 const path                  = require('path');
 const { spawn, execSync }   = require('child_process');
 const wabs                  = require('byu-wabs');
 
 const docker = dockerCommandPath();
 const version = require('../package.json').version;
+const homedir = os.homedir();
 const imageNamePrefix = 'wabs-starter';
 const imageName = imageNamePrefix + ':' + version;
 
@@ -278,15 +280,16 @@ function run(args, config) {
             // environment variables
             const name = pkg.name.replace(/-/g, '_').toUpperCase();
             const env = Object.assign({}, config.env);
-            if (opts.hasOwnProperty('consumerKey')) env[name + '__CONSUMER_KEY'] = opts.consumerKey || '';
-            if (opts.hasOwnProperty('consumerSecret')) env[name + '__CONSUMER_SECRET'] = opts.consumerSecret || '';
-            if (opts.hasOwnProperty('encryptSecret')) env[name + '__ENCRYPT_SECRET'] = opts.encryptSecret || '';
+            //if (opts.hasOwnProperty('consumerKey')) env[name + '__CONSUMER_KEY'] = opts.consumerKey || '';
+            //if (opts.hasOwnProperty('consumerSecret')) env[name + '__CONSUMER_SECRET'] = opts.consumerSecret || '';
+            //if (opts.hasOwnProperty('encryptSecret')) env[name + '__ENCRYPT_SECRET'] = opts.encryptSecret || '';
 
             const args = [
                 'run',
                 '-it',
                 '--rm',
-                '-v', pkg.applicationPath + ':' + '/var/wabs'
+                '-v', pkg.applicationPath + ':' + '/var/wabs',
+                '-v', path.resolve(homedir, '.wabs/config.json') + ':' + '/root/.wabs/config.json'
             ];
 
             // open ports
@@ -295,7 +298,7 @@ function run(args, config) {
 
             // docker arguments
             if (config.entrypoint) args.push('--entrypoint', config.entrypoint);
-            Object.keys(env).forEach(key => args.push('-e', key));
+            Object.keys(env).forEach(key => args.push('-e', key + '=' + env[key]));
             // docker image
             args.push(imageName);
 
@@ -307,7 +310,7 @@ function run(args, config) {
 
             // start the docker container
             const child = spawn(docker, args, {
-                env: env,
+                //env: env,
                 stdio: 'inherit'
             });
 
