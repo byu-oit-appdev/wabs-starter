@@ -48,7 +48,11 @@ exports.bash = function(args) {
 exports.exec = function(command) {
     ensureImageExists(() => {
         const match = /^(?:-P)|(?:--prod) /.exec(command);
-        if (match) command = command.substr(match[0].length);
+        let args = { args: [] };
+        if (match) {
+          command = command.substr(match[0].length);
+          args.args.push('-P');
+        }
 
         const config = {
             command: command,
