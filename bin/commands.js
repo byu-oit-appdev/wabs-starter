@@ -34,14 +34,14 @@ exports.exec = function(command) {
         command = command.substr(match[0].length);
         args.args.push('-P');
     }
-    docker(args, { entrypoint: '/bin/bash', command: command });
+    docker(args, { entrypoint: '/bin/bash', command: command, escapable: true });
 };
 
 exports.run = function(args) {
     if (args.help) {
         help('run', 'run [OPTIONS] SCRIPT');
     } else {
-        docker(args, { entrypoint: '/bin/bash', command: 'npm run ' + args.args.join(' ') });
+        docker(args, { entrypoint: '/bin/bash', command: 'npm run ' + args.args.join(' '), escapable: true });
     }
 };
 
@@ -49,7 +49,7 @@ exports.start = function(args) {
     if (args.help) {
         help('start', 'start [OPTIONS]');
     } else {
-        docker(args, { entrypoint: '/bin/bash', command: 'npm start' });
+        docker(args, { entrypoint: '/bin/bash', command: 'npm start', escapable: true });
     }
 };
 
@@ -57,7 +57,7 @@ exports.test = function(args) {
     if (args.help) {
         help('test', 'test [OPTIONS]');
     } else {
-        docker(args, { entrypoint: '/bin/bash', command: 'npm test' });
+        docker(args, { entrypoint: '/bin/bash', command: 'npm test', escapable: true });
     }
 };
 
@@ -73,7 +73,7 @@ function docker(args, config) {
     } else {
         Docker = require('./docker/unix');
     }
-    return new Docker().init(args, config).catch(err => console.error(err.stack));
+    return new Docker().start(args, config).catch(err => console.error(err.stack));
 }
 
 function help(name, usage) {

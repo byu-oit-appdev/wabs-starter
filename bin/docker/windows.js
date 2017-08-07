@@ -21,6 +21,11 @@ const { spawn }         = require('child_process');
 
 module.exports = Windows;
 
+/**
+ * Windows specific docker.
+ * @constructor
+ * @augments Docker
+ */
 function Windows() {}
 
 Windows.prototype = Object.assign({}, Docker.prototype);
@@ -43,7 +48,7 @@ Windows.prototype.buildImage = function(version) {
 };
 
 Windows.prototype.getImage = function(version) {
-    return new Promise(function(resolve, reject) {
+    return new Promise((resolve, reject) => {
         const child = spawn('docker', ['images']);
         let stdout = '';
 
@@ -69,28 +74,29 @@ Windows.prototype.getImage = function(version) {
     });
 };
 
-Windows.prototype.run = function(config) {
+Windows.prototype.run = function(options, version) {
     const args = [
         'run',
         '-it',
         '--rm',
-        '-v', config.pkg.applicationPath + ':' + '/var/wabs',
-        '-v', this.CONFIG_PATH + ':' + '/root/.wabs/config.json'
+        '-v', options.pkg.applicationPath + ':/var/wabs'
     ];
 
     // open ports
-    if (config.port) args.push('-p', config.port + ':' + config.port);
-    if (config.debug) args.push('-p', config.debug + ':' + config.debug);
+    if (options.port) args.push('-p', options.port + ':' + options.port);
+    if (options.debug) args.push('-p', options.debug + ':' + options.debug);
 
-    // docker arguments
-    const env = config.env;
-    if (config.entrypoint) args.push('--entrypoint', config.entrypoint);
-    Object.keys(env).forEach(key => args.push('-e', key + '=' + env[key]));
-    // docker image
-    args.push(this.IMAGE_NAME);
+    // set entry point
+    if (options.entrypoint) args.push('--entrypoint', options.entrypoint);
+
+    // set environment variables
+    Object.keys(options.env).forEach(key => args.push('-e', key + '=' + options.env[key]));
+
+    // specify image
+    args.push(this.IMAGE_NAME + ':' + version);
 
     // command and command arguments
-    if (config.command) args.push.apply(args, config.command.split(/\s+/));
+    if (options.command) args.push.apply(args, options.command.split(/\s+/));
 
     // output the docker command
     console.log('\ndocker ' + args.join(' ') + '\n');

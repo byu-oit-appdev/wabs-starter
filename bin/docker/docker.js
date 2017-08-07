@@ -48,6 +48,7 @@ Object.defineProperty(Docker.prototype, 'IMAGE_NAME', { value: 'wabs-starter', e
 
 /**
  * Build the docker image.
+ * @abstract
  * @param {String} version
  * @returns {Promise}
  */
@@ -71,6 +72,7 @@ Docker.prototype.getBuildVersion = function() {
 
 /**
  * Get details about all docker images.
+ * @abstract
  * @param {String} [version]
  * @returns {Promise<Array>}
  */
@@ -78,6 +80,12 @@ Docker.prototype.getImage = function(version) {
     return Promise.reject(Error('getImage not implemented'));
 };
 
+/**
+ * Figure out the run options from the cli args
+ * @param {Object} args
+ * @param {Object} config
+ * @returns {Promise<Object>}
+ */
 Docker.prototype.getOptions = function(args, config) {
     const pkg = getPackageContent();
     config.pkg = pkg;
@@ -128,12 +136,18 @@ Docker.prototype.getOptions = function(args, config) {
  */
 Docker.prototype.isRunning = function() {
     return commandExists('docker')
-        .catch(err => {
+        .catch(() => {
             throw Error('Docker does not seem to be installed or is not running.')
         });
 };
 
-Docker.prototype.init = function(args, config) {
+/**
+ * Start the container.
+ * @param args
+ * @param config
+ * @returns {Promise}
+ */
+Docker.prototype.start = function(args, config) {
     let version;
     return this.getBuildVersion()
         .then(v => {
@@ -150,12 +164,19 @@ Docker.prototype.init = function(args, config) {
         })
         .then(() => this.getOptions(args, config))
         .then(options => {
-            console.log('Starting container');
-            return this.run(options);
+            console.log('\nStarting container');
+            return this.run(options, version);
         });
 };
 
-Docker.prototype.run = function(config) {
+/**
+ * Run the container.
+ * @abstract
+ * @param {Object} config
+ * @param {String} version
+ * @returns {Promise}
+ */
+Docker.prototype.run = function(config, version) {
     return Promise.reject(Error('run not implemented'));
 };
 
