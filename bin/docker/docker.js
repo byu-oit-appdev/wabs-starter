@@ -59,7 +59,7 @@ Docker.prototype.buildImage = function(version) {
  * Get the label from the Dockerfile that specifies the version
  * @returns {Promise<string>}
  */
-Docker.prototype.buildVersion = function() {
+Docker.prototype.getBuildVersion = function() {
     return new Promise((resolve, reject) => {
         fs.readFile(path.resolve(__dirname, '../../Dockerfile'), 'utf8', function(err, data) {
             if (err) return reject(err);
@@ -135,7 +135,7 @@ Docker.prototype.isRunning = function() {
 
 Docker.prototype.init = function(args, config) {
     let version;
-    return this.buildVersion()
+    return this.getBuildVersion()
         .then(v => {
             version = v;
             return this.getImage(v)
