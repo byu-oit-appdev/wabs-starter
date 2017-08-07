@@ -41,6 +41,7 @@ module.exports = function(port) {
     });
 };
 
+// TODO: remove this line below
 module.exports(8000);
 
 function html5Router() {
