@@ -77,7 +77,7 @@ switch (command) {
         commands[command](args);
         break;
     case 'manage':
-        require('./bin/ui-main');
+        require('./bin/ui/ui-main');
         break;
     case 'help':
         console.log('Usage:  wabs [COMMAND]' +
@@ -85,7 +85,7 @@ switch (command) {
             '\n\nCommands:' +
             '\n  bash      Start the docker container in an interactive bash terminal' +
             '\n  help      Output this help message' +
-            '\n  manage    Start the WABS application management tool' +
+            '\n  init      Create a new application from the starter template' +
             '\n  run       Within docker container execute npm run' +
             '\n  start     Within docker container execute npm start' +
             '\n  test      Within docker container execute npm test' +
