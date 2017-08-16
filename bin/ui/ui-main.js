@@ -1,7 +1,7 @@
 'use strict';
 const blessed       = require('blessed');
 const byuOauth      = require('byu-wabs-oauth');
-const common        = require('./common');
+const common        = require('./ui/common');
 const config        = require('./config');
 const copydir       = require('copy-dir');
 const fs            = require('fs');
