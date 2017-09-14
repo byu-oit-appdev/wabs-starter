@@ -18,5 +18,8 @@
     "chokidar": "^1.7.0",
     "command-exists": "^1.2.2",
     "copy-dir": "^0.3.0"
+  },
+  "devDependencies": {
+    "update-notifier": "^2.2.0"
   }
 }

@@ -16,13 +16,15 @@
  *    limitations under the License.
  **/
 'use strict';
-const docker        = require('./bin/docker');
-const version       = require('./package.json').version;
+const docker         = require('./bin/docker');
+const version        = require('./package.json').version;
+const updateNotifier = require('update-notifier');
 
 process.on('unhandledRejection', e => {
     console.error(e.stack);
     process.exit(1);
 });
+
 /*
 const title = 'WABS Starter v' + version;
 const titleBar = (function() {
@@ -37,8 +39,15 @@ console.log('\n' + titleBar);
 console.log(titleSpacer);
 console.log('//   ' + title + '   //');
 console.log(titleSpacer);
-console.log(titleBar + '\n');*/
-console.log(' ');
+console.log(titleBar + '\n');
+console.log(' ');*/
+
+updateNotifier({
+    pkg: {
+        name: '@byu-oit/wabs-starter',
+        version: version
+    }
+}).notify();
 
 const args = (function getCliArgs() {
     const args = Array.prototype.slice.call(process.argv, 2);
