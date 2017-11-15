@@ -22,6 +22,7 @@ software:
       - JavaScript
       - HTML
       - NodeJS
+      - CSS
     standard_change_template_id:
     stages:
       development:
