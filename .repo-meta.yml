@@ -1,4 +1,4 @@
-$schemaver: '2.0'
+$schemaver: 2.1
 repo_url: https://github.com/byu-oit/wabs-starter
 software:
   - name: wabs-starter
@@ -23,7 +23,6 @@ software:
       - HTML
       - NodeJS
       - CSS
-    standard_change_template_id:
     stages:
       development:
         urls:
@@ -46,7 +45,5 @@ software:
             virtual_server:
             rack_server:
             blade_server:
-    tags:
-      data-sensitivity: confidential
-      team: gro:OIT-App Dev Student Info Mgmt
-      app: wabs-starter
+    data_sensitivity: confidential
+    standard_change_template:
