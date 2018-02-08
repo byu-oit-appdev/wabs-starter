@@ -1,23 +1,38 @@
 {
   "name": "@byu-oit/wabs-starter",
-  "version": "0.14.1",
+  "version": "0.13.9",
   "description": "web application starter kit",
   "main": "index.js",
   "bin": {
     "wabs": "index.js"
   },
   "scripts": {
-    "test": "mocha test"
+    "test": "mocha test",
+    "watch": "webpack --watch",
+    "build": "webpack"
   },
   "author": "James Speirs <james_speirs@byu.edu>",
   "license": "Apache-2.0",
   "dependencies": {
     "blessed": "^0.1.81",
+    "body-parser": "^1.17.2",
+    "bootstrap": "^3.3.7",
     "byu-wabs": "^4.0.0",
     "byu-wabs-oauth": "^1.1.0",
     "chokidar": "^1.7.0",
     "command-exists": "^1.2.2",
+    "command-line-callback": "^2.7.1",
     "copy-dir": "^0.3.0",
-    "update-notifier": "^2.2.0"
+    "dockerode": "^2.5.0",
+    "express": "^4.15.3",
+    "inquirer": "^3.2.1",
+    "vue": "^2.4.2"
+  },
+  "devDependencies": {
+    "css-loader": "^0.28.4",
+    "file-loader": "^0.11.2",
+    "html-webpack-plugin": "^2.30.1",
+    "style-loader": "^0.18.2",
+    "webpack": "^3.5.1"
   }
 }

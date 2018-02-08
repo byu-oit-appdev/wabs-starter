@@ -64,5 +64,8 @@
             ]
         ]
     },
-    "wabs": true
+    "wabs": {
+        "port": 8080,
+        "debugPort": 9229
+    }
 }

@@ -16,14 +16,30 @@
  *    limitations under the License.
  **/
 'use strict';
-const docker         = require('./bin/docker');
-const version        = require('./package.json').version;
-const updateNotifier = require('update-notifier');
+const Command       = require('command-line-callback');
+const commands      = require('./bin/commands');
+const version       = require('./package.json').version;
 
 process.on('unhandledRejection', e => {
     console.error(e.stack);
     process.exit(1);
 });
+
+Command.define('abc', commands.help, {
+    brief: 'Get general help or command specific help.',
+    synopsis: [
+        '[COMMAND]'
+    ],
+    options: {
+
+    }
+});
+
+Command.evaluate();
+return;
+
+
+
 
 /*
 const title = 'WABS Starter v' + version;
@@ -39,15 +55,8 @@ console.log('\n' + titleBar);
 console.log(titleSpacer);
 console.log('//   ' + title + '   //');
 console.log(titleSpacer);
-console.log(titleBar + '\n');
-console.log(' ');*/
-
-updateNotifier({
-    pkg: {
-        name: '@byu-oit/wabs-starter',
-        version: version
-    }
-}).notify();
+console.log(titleBar + '\n');*/
+console.log(' ');
 
 const args = (function getCliArgs() {
     const args = Array.prototype.slice.call(process.argv, 2);
@@ -79,22 +88,25 @@ const args = (function getCliArgs() {
 const command = args.command || 'help';
 
 switch (command) {
+    case 'apps':
     case 'bash':
+    case 'edit':
     case 'run':
     case 'start':
     case 'test':
-        docker[command](args);
+        commands[command](args);
         break;
     case 'manage':
-        require('./bin/ui-main');
+        require('./bin/ui/ui-main');
         break;
     case 'help':
         console.log('Usage:  wabs [COMMAND]' +
             '\n\nA tool for managing local development for WABS full stack single page applications' +
             '\n\nCommands:' +
+            '\n  apps      List all defined apps' +
             '\n  bash      Start the docker container in an interactive bash terminal' +
             '\n  help      Output this help message' +
-            '\n  manage    Start the WABS application management tool' +
+            '\n  init      Create a new application from the starter template' +
             '\n  run       Within docker container execute npm run' +
             '\n  start     Within docker container execute npm start' +
             '\n  test      Within docker container execute npm test' +
@@ -104,6 +116,6 @@ switch (command) {
             'For example you could try this command: wabs npm install');
         break;
     default:
-        docker.exec(process.argv.slice(2).join(' '));
+        commands.exec(process.argv.slice(2).join(' '));
         break;
 }
