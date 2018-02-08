@@ -15,6 +15,7 @@
  *    limitations under the License.
  **/
 'use strict';
+const byuOauth      = require('byu-wabs-oauth');
 const fs            = require('fs');
 const path          = require('path');
 
@@ -34,4 +35,21 @@ exports.getAppRoot = function() {
 exports.getPackage = function() {
     const fullPath = exports.getAppRoot();
     return fullPath ? JSON.parse(fs.readFileSync(path.resolve(fullPath, 'package.json'), 'utf8')) : null;
+};
+
+exports.testWso2Credentials = function(consumerKey, consumerSecret) {
+    const oauth = byuOauth(consumerKey, consumerSecret, 'https://api.byu.edu/.well-known/openid-configuration');
+    return oauth.getClientGrantAccessToken()
+        .then(function(token) {
+            return token && token.accessToken && true;
+        })
+        .catch(() => {
+            return false;
+        });
+};
+
+exports.stringLength = function(value, length) {
+    if (value.length > length) value = value.substr(0, length);
+    while (value.length < length) value += ' ';
+    return value;
 };
