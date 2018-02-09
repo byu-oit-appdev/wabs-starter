@@ -30,7 +30,7 @@ module.exports = {
     development: {
         browserSync: true,
         host: 'http://localhost',
-        port: 3000,
+        port: 8460,
         serverArgs: ['--inspect'],
         serverSync: true
     },
@@ -42,7 +42,7 @@ module.exports = {
     server: {
         directory: path.resolve(__dirname, 'server'),
         main: path.resolve(__dirname, 'server/index'),
-        port: 4000
+        port: 8461
     },
 
     // wabs configuration
