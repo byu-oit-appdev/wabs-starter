@@ -1,6 +1,8 @@
 <template>
-    <h2>Home Page</h2>
-    <p>This is the home page</p>
+    <div>
+        <h2>Home Page</h2>
+        <p>This is the home page</p>
+    </div>
 </template>
 
 <script>
@@ -12,4 +14,5 @@
         font-weight: bold;
         color: orange;
     }
+
 </style>
