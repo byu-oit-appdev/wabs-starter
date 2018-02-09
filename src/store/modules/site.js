@@ -29,12 +29,12 @@ const store = {
         ]
     },
     mutations: {
+        siteLinks (state, links) {
+            state.links = links;
+        },
         siteTitle (state, value) {
             state.title = value;
             document.querySelector('title').innerText = value;
-        },
-        siteLinks (state, links) {
-            state.links = links;
         }
     }
 };
