@@ -42,7 +42,7 @@ Vue.use(BYU, {
     }
 });
 
-const app = new Vue({
+window.app = new Vue({
     el: '#app',
     router,
     store
