@@ -16,6 +16,7 @@
  **/
 'use strict';
 const config    = require('../config');
+const path      = require('path');
 const webpack   = require('webpack');
 
 const appPath = config.build.main;

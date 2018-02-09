@@ -74,33 +74,43 @@ function runServerSync() {
         let sent;
 
         function load() {
-            return fork(config.server.main, { execArgv: args });
+            const server = fork(config.server.main, { execArgv: args });
+
+            server.on('error', err => {
+                if (!sent) {
+                    sent = true;
+                    return reject(err);
+                }
+                console.error(err.stack);
+                process.exit(1);
+            });
+
+            server.on('exit', code => {
+                console.log('Server process exited with code: ' + code);
+                if (code) sent ? process.exit(1) : reject(Error('Unable to start server.'));
+                sent = true;
+            });
+
+            // listen for the server to be ready
+            server.on('message', m => {
+                if (m.type === 'server-listening') {
+                    if (sent) {
+                        console.log('For BrowserSync use port: ' + config.development.port);
+                    } else {
+                        sent = true;
+                        resolve(m.port);
+                    }
+                }
+            });
+
+            return server;
         }
 
         // start the server
         server = load();
 
-        server.on('error', err => {
-            if (!sent) return reject(err);
-            console.error(err.stack);
-        });
-
-        server.on('exit', code => {
-            if (code !== 0 && !sent) return reject(Error('Unable to start server.'));
-            console.log('Server process exited with code: ' + code);
-        });
-
-        // listen for the server to be ready
-        server.on('message', m => {
-            console.log(m);
-            if (!sent && m.type === 'server-listening') {
-                sent = true;
-                resolve(m.port);
-            }
-        });
-
         // if server directory changes then reload server
-        gulp.watch(config.server.directory + '/*.js').on('change', () => {
+        gulp.watch(config.server.directory + '/*').on('change', () => {
             clearTimeout(serverTimeoutId);
             serverTimeoutId = setTimeout(() => {
                 server.kill();
