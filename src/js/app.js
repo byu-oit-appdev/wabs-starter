@@ -15,10 +15,26 @@
  *    limitations under the License.
  **/
 'use strict';
-import Vue from 'vue'
+import BYU from '../plugins/byu';
 import router from './router'
+import store from '../store/index'
+import Vue from 'vue'
+
+import '../css/main.scss';
+
+Vue.config.ignoredElements = [
+    'byu-footer',
+    'byu-footer-column',
+    'byu-header',
+    'byu-menu',
+    'byu-search',
+    'byu-user-info'
+];
+
+Vue.use(BYU);
 
 const app = new Vue({
     el: '#app',
-    router: router
+    router,
+    store
 });
