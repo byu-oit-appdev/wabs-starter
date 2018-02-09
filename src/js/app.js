@@ -31,7 +31,16 @@ Vue.config.ignoredElements = [
     'byu-user-info'
 ];
 
-Vue.use(BYU);
+Vue.use(BYU, {
+    search: {                   // remove search object to disable search
+        autoSearch: false,
+        autoSearchDelay: 300,
+        callback: function(value) {
+            console.log('Searched for ' + value)
+        },
+        value: ''
+    }
+});
 
 const app = new Vue({
     el: '#app',
