@@ -26,20 +26,28 @@ export default {
         if (!options.search.value) options.search.value = '';
 
         const searchEnabled = options.search.callback;
+        let searchElement;
 
         function search(value, submitted) {
             clearTimeout(timeoutId);
             if (submitted) {
-                options.search.callback(search.value);
+                options.search.callback(search.value, true);
 
             } else if (options.autoSearch) {
                 setTimeout(() => {
-                    options.search.callback(search.value);
+                    options.search.callback(search.value, false);
                 }, options.autoSearchDelay);
             }
         }
 
-        search.value = options.search.value;
+        Object.defineProperty(search, 'value', {
+            get: function() {
+                return searchElement ? searchElement.value : '';
+            },
+            set: function(value) {
+                if (searchElement && searchElement.value !== value) searchElement.value = value;
+            }
+        });
 
         // expose the $byu object to all components
         Object.defineProperty(Vue.prototype, '$byu', {
@@ -47,5 +55,18 @@ export default {
                 return searchEnabled ? Object.assign({ search }, window.byu) : window.byu;
             }
         });
+
+        (function() {
+            const intervalId = setInterval(function() {
+                searchElement = document.querySelector('#byuSiteSearch');
+                if (searchElement) {
+                    clearInterval(intervalId);
+                    searchElement.value = options.search.value;
+                    searchElement.addEventListener('keyup', function() {
+                        search(searchElement.value, false);
+                    });
+                }
+            }, 100);
+        })();
     }
 }

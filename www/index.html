@@ -15,7 +15,7 @@
 
             <byu-search slot="search" placeholder="Search" v-if="$byu.search">
                 <form method="get" @submit.prevent="$byu.search($byu.search.value, true)">
-                    <input type="search" name="search" v-model="$byu.search.value" @keyup="$byu.search($byu.search.value, false)">
+                    <input type="search" name="search" id="byuSiteSearch">
                 </form>
             </byu-search>
 
