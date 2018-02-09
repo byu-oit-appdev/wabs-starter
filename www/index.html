@@ -21,9 +21,9 @@
 
             <!-- user login / logout -->
             <byu-user-info slot="user" login-url="#login">
-                <a slot="login" href="#" @click.prevent="byu.auth.login()">Sign In</a>
-                <a slot="logout" href="#" @click.prevent="byu.auth.logout()">Sign Out </a>
-                <span slot="user-name" v-if="byu.user">{{byu.user.preferredFirstName}}</span>
+                <a slot="login" href="#" @click.prevent="$byu.auth.login()">Sign In</a>
+                <a slot="logout" href="#" @click.prevent="$byu.auth.logout()">Sign Out </a>
+                <span slot="user-name" v-if="$byu.user">{{$byu.user.preferredFirstName}}</span>
             </byu-user-info>
 
             <!-- show navigation if there are links -->
