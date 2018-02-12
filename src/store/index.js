@@ -20,7 +20,7 @@ import mutations from './mutations'
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import Site from './modules/site'
+import Byu from './modules/byu'
 import Wabs from './modules/wabs'
 
 Vue.use(Vuex);
@@ -34,7 +34,7 @@ const store = new Vuex.Store({
     mutations,
     state,
     modules: {
-        site: Site,
+        byu: Byu,
         wabs: Wabs
     }
 });
