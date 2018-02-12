@@ -19,7 +19,16 @@ export default {
     install: function (Vue, options) {
         let timeoutId;
 
+        // normalize options
         if (!options) options = {};
+
+
+        //////////////////////////////
+        //                          //
+        //       SET UP SEARCH      //
+        //                          //
+        //////////////////////////////
+
         if (!options.search) options.search = {};
         if (!options.hasOwnProperty('autoSearch')) options.autoSearch = false;
         if (!options.hasOwnProperty('autoSearchDelay')) options.autoSearchDelay = 300;
@@ -28,18 +37,23 @@ export default {
         const searchEnabled = options.search.callback;
         let searchElement;
 
+        // define search event handler
         function search(value, submitted) {
+            if (arguments.length < 1) value = search.value;
+            if (arguments.length < 2) submitted = true;
+
             clearTimeout(timeoutId);
             if (submitted) {
-                options.search.callback(search.value, true);
+                options.search.callback(value, true);
 
             } else if (options.autoSearch) {
                 setTimeout(() => {
-                    options.search.callback(search.value, false);
+                    options.search.callback(value, false);
                 }, options.autoSearchDelay);
             }
         }
 
+        // define search value getter / setter
         Object.defineProperty(search, 'value', {
             get: function() {
                 return searchElement ? searchElement.value : '';
@@ -49,14 +63,8 @@ export default {
             }
         });
 
-        // expose the $byu object to all components
-        Object.defineProperty(Vue.prototype, '$byu', {
-            get () {
-                return searchEnabled ? Object.assign({ search }, window.byu) : window.byu;
-            }
-        });
-
-        (function() {
+        // initialize site search
+        if (searchEnabled) {
             const intervalId = setInterval(function() {
                 searchElement = document.querySelector('#byuSiteSearch');
                 if (searchElement) {
@@ -67,6 +75,83 @@ export default {
                     });
                 }
             }, 100);
-        })();
+        }
+
+
+
+        ///////////////////////////////////////////
+        //                                       //
+        //       Add $byu to each component      //
+        //                                       //
+        ///////////////////////////////////////////
+
+        // expose the $byu object to all components
+        Object.defineProperty(Vue.prototype, '$byu', {
+            get () {
+                const site = {};
+                const store = this.$store;
+
+                Object.defineProperties(site, {
+                    navigation: {
+                        get: () => {
+                            const links = store.state.byu.navigation;
+                            return links ? links.map(v => Object.assign({}, v)) : null
+                        },
+                        set: links => store.commit('siteLinks', links)
+                    },
+
+                    title: {
+                        get: () => store.state.byu.title,
+                        set: title => store.commit('siteTitle', title)
+                    }
+                });
+
+                const result = {
+                    site,
+                    user: window.byu.user
+                };
+                if (searchEnabled) result.search = search;
+                return Object.assign(result, window.byu);
+            }
+        });
+
+
+
+        ///////////////////////////////////////////
+        //                                       //
+        //      Update site navigation mixin     //
+        //                                       //
+        ///////////////////////////////////////////
+
+        Vue.mixin({
+
+            // if component has byuNavigation property then update nav
+            beforeRouteEnter(from, to, next) {
+                next(vm => {
+                    const nav = vm.$options.byuNavigation;
+                    if (typeof nav === 'function') {
+                        const links = vm.$byu.site.navigation;
+                        const match = findMatchingNavigationItem(links, vm.$route);
+                        vm.$byu.site.navigation = nav(match, links);
+                    }
+                });
+            },
+
+            // if component has byuNavigation property then update nav
+            beforeRouteUpdate(from, to, next) {
+                const nav = this.$options.byuNavigation;
+                if (typeof nav === 'function') {
+                    const links = vm.$byu.site.navigation;
+                    const match = findMatchingNavigationItem(links, to);
+                    this.$byu.site.navigation = nav(match, links);
+                }
+                next();
+            }
+        });
     }
+}
+
+function findMatchingNavigationItem(items, path) {
+    if (!items) return undefined;
+    return items.filter(link => link.href === path.fullPath)[0];
 }
