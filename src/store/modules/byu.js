@@ -15,22 +15,18 @@
  *    limitations under the License.
  **/
 'use strict';
-
-const store = {
+export default {
     state: {
         title: 'Your Site Title',
-        navigation: [
-            { href: '/', title: 'Home' },
-            { href: '/a', title: 'A link with a very long title' },
-            { href: '/b', title: 'Link 3' },
-            { href: '/c', title: 'Link 4' },
-            { href: '/d', title: 'Link 5' },
-            { href: '/e', title: 'Link 6' }
-        ]
+        navigation: null
     },
     mutations: {
         siteLinks (state, links) {
-            state.links = links;
+            if (JSON.stringify(state.navigation) !== JSON.stringify(links)) {
+                // set nav to null prior update to refresh the byu-menu component
+                state.navigation = null;
+                if (links) setTimeout(() => state.navigation = links, 0);
+            }
         },
         siteTitle (state, value) {
             state.title = value;
@@ -38,5 +34,3 @@ const store = {
         }
     }
 };
-
-export default store;
