@@ -46,9 +46,9 @@
             }
         },
         methods: {
-            navigate(link, router) {
+            navigate(link) {
                 if (link.callback) {
-                    link.callback(link, router);
+                    link.callback.call(this, link);
 
                 } else if (link.href) {
                     const loc = window.location;
@@ -62,7 +62,7 @@
                     if (notPushable) {
                         window.location = link.href;
                     } else {
-                        router.push(link.href);
+                        this.$router.push(link.href);
                     }
                 }
             }
