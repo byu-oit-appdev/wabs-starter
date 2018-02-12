@@ -15,7 +15,8 @@
  *    limitations under the License.
  **/
 'use strict';
-import Home from '../components/Home';
+import Home from '../components/Home'
+import Temp from '../components/Temp'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
@@ -26,7 +27,8 @@ export default new VueRouter({
     mode: 'history',
     routes: [
         { path: '/', component: Home },
+        { path: '/:title', component: Temp },
 
         { path: '*', redirect: '/' }
     ]
-})
+});
