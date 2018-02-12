@@ -15,8 +15,8 @@
  *    limitations under the License.
  **/
 'use strict';
-import Home from '../components/Home'
-import Temp from '../components/Temp'
+import Home from './Home'
+import Temp from './Temp'
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
