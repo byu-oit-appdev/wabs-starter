@@ -97,7 +97,7 @@ export default {
                             const links = store.state.byu.navigation;
                             return links ? links.map(v => Object.assign({}, v)) : null
                         },
-                        set: links => store.commit('siteLinks', links)
+                        set: links => store.commit('siteNavigation', links)
                     },
 
                     title: {

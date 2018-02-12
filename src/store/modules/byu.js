@@ -21,7 +21,7 @@ export default {
         navigation: null
     },
     mutations: {
-        siteLinks (state, links) {
+        siteNavigation (state, links) {
             if (JSON.stringify(state.navigation) !== JSON.stringify(links)) {
                 // set nav to null prior update to refresh the byu-menu component
                 state.navigation = null;
