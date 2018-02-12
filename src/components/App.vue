@@ -19,7 +19,7 @@
 
             <!-- show navigation if there are links -->
             <byu-menu slot="nav" v-if="hasNavigation">
-                <a href="#" @click.prevent="$router.push(link.href)"
+                <a :href="link.href" @click.prevent="navigate(link, $router)"
                    :class="{ active: link.href === $route.path }"
                    v-for="link in links">{{link.title}}</a>
             </byu-menu>
@@ -34,18 +34,36 @@
 </template>
 
 <script>
-    import Home from './Home'
+    const rxLink = /^(https?:)\/\/([\s\S]+?)(?:\:(\d+))?(?:\/|$)/;
 
     export default {
-        components: {
-            Home
-        },
         computed: {
             hasNavigation() {
                 return this.links && this.links.length > 0;
             },
             links() {
                 return this.$store.state.byu.navigation;
+            }
+        },
+        methods: {
+            navigate(link, router) {
+                if (link.callback) {
+                    link.callback(router);
+                } else if (link.href) {
+                    const loc = window.location;
+                    const match = rxLink.exec(link.href);
+                    const notPushable = match
+                        ? loc.protocol !== match[1]
+                            || (loc.host || loc.hostname) !== match[2]
+                            || loc.port !== (match[3] || '')
+                        : false;
+
+                    if (notPushable) {
+                        window.location = link.href;
+                    } else {
+                        router.push(link.href);
+                    }
+                }
             }
         }
     }
