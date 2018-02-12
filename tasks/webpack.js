@@ -33,6 +33,8 @@ exports.config = {
 
     context: config.build.dest,
 
+    devtool: config.production ? 'none' : 'eval-source-map',
+
     resolve: {
         extensions: ['.js', '.vue', '.json'],
         alias: {
