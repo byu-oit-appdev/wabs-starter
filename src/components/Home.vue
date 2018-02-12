@@ -9,7 +9,7 @@
     export default {
 
         // define a new navigation when this page is loaded
-        byuNavigation(route, links) {
+        byuNavigation(selected, links) {
             return [
                 { href: '/', title: 'Home' },
                 { href: '/link-2', title: 'Link 2' },
