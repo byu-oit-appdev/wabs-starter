@@ -15,6 +15,7 @@
  *    limitations under the License.
  **/
 'use strict';
+import App from '../components/App';
 import BYU from '../plugins/byu';
 import router from './router'
 import store from '../store/index'
@@ -44,6 +45,7 @@ Vue.use(BYU, {
 
 window.app = new Vue({
     el: '#app',
+    render: h => h(App),
     router,
     store
 });
