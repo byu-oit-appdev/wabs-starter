@@ -18,6 +18,10 @@
                 { href: '/link-5', title: 'Link 5' },
                 { href: '/link-6', title: 'Link 6' }
             ]
+        },
+
+        byuTitle(selected) {
+            return 'Demo Site | Home';
         }
     }
 </script>

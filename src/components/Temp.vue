@@ -20,6 +20,11 @@
             if (selected) results.splice(1, 0, { href: selected.path, title: selected.title });
             return results;
         },
+
+        byuTitle(selected) {
+            return 'Demo Site' + (selected ? ' | ' + selected.title : '');
+        },
+
         computed: {
             title() {
                 return this.$route.params.title;

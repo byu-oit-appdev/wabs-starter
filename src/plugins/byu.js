@@ -126,25 +126,13 @@ export default {
         Vue.mixin({
 
             // if component has byuNavigation property then update nav
-            beforeRouteEnter(from, to, next) {
-                next(vm => {
-                    const nav = vm.$options.byuNavigation;
-                    if (typeof nav === 'function') {
-                        const links = vm.$byu.site.navigation;
-                        const match = findMatchingNavigationItem(links, vm.$route);
-                        vm.$byu.site.navigation = nav(match, links);
-                    }
-                });
+            beforeRouteEnter(to, from, next) {
+                next(vm => routeEnter(vm, vm.$route));
             },
 
             // if component has byuNavigation property then update nav
-            beforeRouteUpdate(from, to, next) {
-                const nav = this.$options.byuNavigation;
-                if (typeof nav === 'function') {
-                    const links = vm.$byu.site.navigation;
-                    const match = findMatchingNavigationItem(links, to);
-                    this.$byu.site.navigation = nav(match, links);
-                }
+            beforeRouteUpdate(to, from, next) {
+                routeEnter(this, to);
                 next();
             }
         });
@@ -154,4 +142,15 @@ export default {
 function findMatchingNavigationItem(items, path) {
     if (!items) return undefined;
     return items.filter(link => link.href === path.fullPath)[0];
+}
+
+function routeEnter(vm, to) {
+    const links = vm.$byu.site.navigation;
+    const match = findMatchingNavigationItem(links, to);
+
+    const nav = vm.$options.byuNavigation;
+    if (typeof nav === 'function') vm.$byu.site.navigation = nav(match, links);
+
+    const title = vm.$options.byuTitle;
+    if (typeof title === 'function') vm.$byu.site.title = title(match);
 }
