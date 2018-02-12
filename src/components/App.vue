@@ -48,7 +48,8 @@
         methods: {
             navigate(link, router) {
                 if (link.callback) {
-                    link.callback(router);
+                    link.callback(link, router);
+
                 } else if (link.href) {
                     const loc = window.location;
                     const match = rxLink.exec(link.href);
