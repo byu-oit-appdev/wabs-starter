@@ -31,7 +31,7 @@ module.exports = {
         browserSync: true,
         host: 'http://localhost',
         port: 8460,
-        serverArgs: ['--inspect'],
+        serverArgs: ['--inspect=9229'],
         serverSync: true
     },
 
