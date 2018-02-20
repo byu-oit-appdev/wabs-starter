@@ -1,155 +1,266 @@
 # WABS Starter
 
-A command line tool for managing and running single page web applications ([SPA](#what-is-a-single-page-app)) that use [WABS](https://github.com/byu-oit/wabs-middleware) inside of a docker container.
+This starter is preconfigured to optimize development and simplify deployment. It will work with very little additional effort on your part. This readme serves as a guide to using the starter.
 
-## Installation
+**Estimated Set Up Time:** 2 minutes
 
-```sh
-npm install -g @byu-oit/wabs-starter
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [What's Included](#whats-included)
+- [BYU Plugin](#byu-plugin)
+    - [Site Title](#site-title)
+    - [Site Navigation](#site-navigation)
+    - [Site Search](#site-search)
+- [File System Structure](#file-system-structure)
+- [Production Build](#production-build)
+- [Troubleshooting](#troubleshooting)
+
+## Quick Start
+
+This section details instructions for getting started with the development of your application.
+
+1. Clone the project from github: `git clone git@github.com:byu-oit/wabs-starter.git`.
+
+2. Log in to AWS
+
+    1. Install AWS Login: https://github.com/byu-oit/awslogin
+
+    2. Run the command: `awslogin` to log in
+
+    2. Select the account: `dev-oit-byu`
+
+3. From within the project directory run the command: `npm run dev`
+
+    By default this will also cause the NodeJS server to run in debug mode on port 9229, allowing you to set up a remote debug session.
+
+4. Open a browser to http://localhost:8460
+
+Eventually you will need to set up your own WSO2 application and have your app use that instead of the `demo-app`. See the documentation at https://www.npmjs.com/package/byu-wabs to get started with that.
+
+## What's Included?
+
+- Authentication with CAS.
+
+- Authorization with WSO2 (for `wabs-demo` application - [Set up own WSO2 application](#)).
+
+- Using the latest BYU theme.
+
+- Interoperability with the C-Framework.
+
+- Vue Router
+
+- Vuex ([Vuex Video Tutorial](https://www.youtube.com/watch?v=BGAu__J4xoc&list=PL4cUxeGkcC9i371QO_Rtkl26MwtiJ30P2))
+
+- Gulp, Webpack, and BrowserSync
+
+- SCSS Transpiler
+
+## BYU Plugin
+
+The BYU plugin for vue adds various bits of functionality for controlling site title, navigation menu, authenticated state, and search. You can access the functionality of these components within a Vue component using `this.$byu` or outside of a component using `app.$byu`.
+
+- [Site Title](#site-title)
+- [Site Navigation](#site-navigation)
+- [Site Search](#site-search)
+
+### Site Title
+
+The site title is stored in a Vuex store.
+
+**Set Title within a Component**
+
+```js
+this.$store.commit('siteTitle', 'My New Title')
+
+this.$byu.site.title = 'My New Title';   // will commit to the store for you
 ```
 
-## Create an App
+**Get Title within a Component**
 
-1. Define your WSO2 application credentials.
+```js
+let title;
 
-    1. Set up a WSO2 application on [http://api.byu.edu/store](http://api.byu.edu/store).
+title = this.$store.byu.title;
 
-    2. Navigate to `My Applications` and add an application.
+title = this.$byu.site.title;       // will get the title from the store
+```
 
-        The callback URL should be `https://<your-domain>/wabs/oauth-code`. If you are developing on your local machine then your callback URL might look like this: `https://localhost:8080/wabs/oauth-code`.
+**Update Title Per Route**
 
-    3. Navigate to `My Subscriptions`, select your application from the dropdown menu, and generate the credentials. You will need these credentials soon.
+You can update the title for a route change within the route component's configuration. The `byuTitle` function will be called when the route changes and uses this component. The `selected` parameter is the navigational link object that was selected to navigate to this page.
 
-2. Start the [terminal application](#terminal-application): `wabs manage`
+```html
+<template>
 
-    1. Select `Create a New App`.
+</template>
 
-    2. Enter the name (numbers, letters, and dashes allowed).
+<script>
+    export default {
 
-    3. Enter consumer key and consumer secret.
+        byuTitle(selected) {
+            return 'Demo Site | Home';
+        }
+    }
+</script>
+```
 
-    4. Enter encrypt secret. This is used to encrypt private data. You can choose any password, but it should be a good one.
+### Site Navigation Menu
 
-    5. Save the changes.
+The navigational menu that is part of the BYU header is stored in the Vuex store as an array of objects. Each object should have the following structure:
 
-    6. Select the option to `Build App`, fill out the form, and select `Build`.
-
-    7. Exit the terminal application: `Ctrl-C`.
-
-3. Navigate to the directory that the build was placed into.
-
-4. Install dependencies: `wabs npm install`.
-
-5. Start the application: `wabs start`
-
-For additional commands see the WABS CLI help: `wabs help`
-
-
-
-
-
-## What is a Single Page App?
-
-**Important!!** You should understand this section before your proceed.
-
-To promote consistency for BYU OIT Application Development the following definition for a single page app will be used:
-
-1. A single [WSO2 application](http://api.byu.edu/store).
-
-2. A single [Express server](http://expressjs.com).
-
-3. A single `index.html` file.
-
-4. A single domain name, for example: `my-app.byu.edu`.
-
-#### A Single WSO2 Application
-
-- WSO2 is our API store. If you want to make REST API calls then this is the tool you should be using.
-
-- You must create a WSO2 app at [http://api.byu.edu/store](http://api.byu.edu/store).
-
-- The WSO2 app must have a consumer key and consumer secret generated for it.
-
-#### A Single Express Server
-
-- We are using [Express server](http://expressjs.com) for our NodeJS servers.
-
-- The server uses [wabs-middleware](https://github.com/byu-oit/wabs-middleware) to manage CAS authentication, WSO2 authorization, and interoperability with legacy frameworks.
-
-- It serves static files from the `www` directory.
-
-- It defines API routes in the `server/routes` directory.
-
-#### A Single index.html File
-
-- There is one `index.html` file and it resides at `www/index.html`.
-
-- This is the root of your front-end application.
-
-- It loads all CSS and JavaScript files (whether statically or dynamically) that are necessary for the entire application.
-
-- It have multiple views. What is visible on the screen may change dramatically without navigating away from the `index.html` file.
-
-- It may support multiple routes. A route causes the URL to look different but it is still on the same `index.html` file. Views are often tied to routes.
-
-#### A Single Domain Name
-
-- The domain will serve up exactly one `index.html` file.
-
-- The domains `admissions.byu.edu` and `application.admissions.byu.edu` can point to two different single page apps.
-
-## Terminal Application
-
-The terminal application assists in the defining and creating of full stack single page web applications ([SPA](#what-is-a-single-page-app)) that uses [WABS](https://github.com/byu-oit/wabs-middleware). The terminal application can:
-
-- Build a new [SPA](./starter/README.md) from a template.
-
-- Manage the WSO2 credentials for [SPAs](./starter/README.md) defined on the machine.
-
-- Test WSO2 credentials.
-
-**Start the terminal application:** `wabs manage`
-
-![App Screenshot](./terminal.png)
-
-- The keyboard can be used to navigate the terminal application. See the keyboard help at the bottom.
-
-- The terminal application may support mouse usage, depending on what terminal you are using.
-
-- The left side has a list of all full-stack apps currently defined on the machine.
-
-- Top left is a button to define a new full-stack app.
-
-- The middle column is the full-stack app menu. Select an item to see details and list of controls in the right column.
-
-## Alternate Usage
-
-The above [usage](#usage) is the recommended usage, but if you'd like to do things by hand it's pretty straight forward too.
-
-### Managing SPA Credentials
-
-Credentials are stored in a file located in your home directory under `.wabs/config.json`. If you want to manually manage the credentials file then you need to modify this file. If you have not used the `wabs` command and saved an app then this file will not exist yet but it can be created either manually or through the `wabs` terminal application.
-
-The credentials file is structured like this:
-
-```json
+```js
 {
-  "my-first-app": {
-    "consumerKey": "asdf1234",
-    "consumerSecret": "hjkl7890",
-    "encryptSecret": "a2*r5jLDOx0"
-  }
+    href: '/',  // the path to navigate to
+    title: 'Link title',
+    callback: link => { ... }   // optional function to perform custom navigation
 }
 ```
 
-### Building a Full Stack SPA
+**Set Navigation within a Component**
 
-1. Download or clone the repository at [https://github.com/byu-oit/wabs-starter](https://github.com/byu-oit/wabs-starter)
+You can update the navigational menu within a component. This must be an array of objects. If the array is empty then the navigation menu will automatically be hidden.
 
-2. Delete everything except the `starter` directory.
+```js
+this.$store.commit('siteNavigation', [
+    { href: '/', title: 'Home' },
+    { href: '/page1', title: 'Page 1'
+]);
 
-3. Do a find and replace for each of the following for the entire `starter` directory.
+// will commit to the store for you
+this.$byu.site.navigation = [
+    { href: '/', title: 'Home' },
+    { href: '/page1', title: 'Page 1' }
+];
+```
 
-    - Replace `{{name}}` with the name of your app as defined in the `$HOME/.wabs/config.json` file.
-    
-4. Rename the `starter` directory to whatever you want.
+**Get Navigation within a Component**
+
+```js
+let nav;
+
+nav = this.$store.byu.navigation;
+
+title = this.$byu.site.navigation;          // will get the title from the store
+```
+
+**Update Navigation Per Route**
+
+You can update the navigation for a route change within the route component's configuration. The `byuTitle` function will be called when the route changes and uses this component. The `selected` parameter is the navigational link object that was selected to navigate to this page. The `links` parameter is the array of links that existed prior to reaching this page.
+
+```html
+<template>
+
+</template>
+
+<script>
+    export default {
+
+        byuNavigation(selected, links) {
+            return [
+                { href: selected.href, title: selected.title },
+                { href: '/page1', title: 'Page 1' }
+            ]
+        }
+    }
+</script>
+```
+
+### Site Search
+
+The search box can be enable or disabled from within the `src/js/app.js` file where the BYU plugin is included. Remove the search property to disable search entirely.
+
+```js
+Vue.use(BYU, {
+    search: {                       // remove search object to disable search
+        autoSearch: false,          // set to true to run search after autoSearchDelay
+        autoSearchDelay: 300,       // the number of milliseconds to wait before auto searching
+        callback: function(value, submitted) {  // the function to execute when search occurs.
+            console.log('Searched for ' + value)
+        },
+        value: ''                   // value to initialize search box with
+    }
+});
+```
+
+The callback function received two parameters:
+
+1. The `search` term.
+
+2. A `boolean` that is `true` if the value was submitted for search or `false` if the search was caused by auto search.
+
+**Get or Set Search Value**
+
+Within a Vue component you can get or set the search value.
+
+```js
+this.$byu.search.value = 'New Search Value';    // set value
+
+const value = this.$byu.search.value;           // get value
+```
+
+**Perform a Manual Search**
+
+You can trigger the search manually by calling the search function. This function takes two optional paramters.
+
+1. The search term. Defaults to what is in the search box.
+
+2. Whether it is being submitted instead of by auto-search. Defaults to `true`.
+
+```js
+this.$byu.search('New search term');
+```
+
+## File System Structure
+
+```
+- server (NodeJS express server code)
+
+- src (the front-end code)
+
+    - components (a directory for your Vue components)
+
+    - css (contains your main CSS file: main.scss)
+
+    - js (contains your main JS file: app.js)
+
+    - plugins (contains custom Vue plugins)
+
+    - router (contains the router and Vue components used as views)
+
+    - store (contains the Vuex store, including some modules)
+
+- tasks (the code that builds your app)
+
+- www (your built code)
+
+- config.js (the build, run, and development configuration)
+```
+
+## Configuration
+
+There are two types of configuration:
+
+1. The WABS middleware configuration. To get this set up you'll want to modify the code in `server/index.js` and follow the instructions at https://www.npmjs.com/package/byu-wabs. This is where you'll be able to name your application and link it to your own WSO2 application instance.
+
+2. The build / run configuration. This can be found in the project root directory at `config.js`. The configuration is documented.
+
+## Production Build
+
+Running your server with `npm run dev` will not store the `build.js` file on the hard drive. To accomplish that you'll want to run the command `npm run build`. You're deployment process should run this command with the environment variable `NODE_ENV` or `HANDEL_ENVIRONMENT_NAME` set to `'production'`.
+
+## Troubleshooting
+
+- **Error: Unable to load WABS configuration**
+
+    The WABS middleware was missing part of the required configuration. Possible solutions:
+
+    1. Make sure that your still logged in to AWS using the [AWS login script](https://github.com/byu-oit/awslogin). In the terminal execute the command `awslogin`. Once logged in then try to start the server again.
+
+    2. Make sure that you have a [configuration defined in the AWS parameter store](https://www.npmjs.com/package/byu-wabs#in-the-aws-parameter-store) for your application.
+
+    3. If you are using a local file for the configuration (**not recommended**) then verify that the file exists at the location you've specified.
+
+- **Error: Unable to start server**
+
+    This error is pretty generic. Try looking a little higher in the counsole output for more specific errors.

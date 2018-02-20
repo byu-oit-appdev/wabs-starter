@@ -1,23 +1,36 @@
 {
   "name": "@byu-oit/wabs-starter",
-  "version": "0.14.1",
-  "description": "web application starter kit",
+  "version": "1.0.0",
+  "description": "A starter template for building single page applications using Vue, Vue Router, and Vuex in conjunction with Gulp and Webpack.",
   "main": "index.js",
-  "bin": {
-    "wabs": "index.js"
-  },
   "scripts": {
-    "test": "mocha test"
+    "build": "gulp --require babel-register --gulpfile tasks build",
+    "dev": "gulp --require babel-register --gulpfile tasks dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "James Speirs <james_speirs@byu.edu>",
+  "author": "James Speirs <james.speirs@gmail.com>",
   "license": "Apache-2.0",
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "browser-sync": "^2.23.6",
+    "css-loader": "^0.28.9",
+    "gulp": "^3.9.1",
+    "node-sass": "^4.7.2",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.20.1",
+    "vue": "^2.5.13",
+    "vue-loader": "^14.1.1",
+    "vue-router": "^3.0.1",
+    "vue-template-compiler": "^2.5.13",
+    "vuex": "^3.0.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-middleware": "^2.0.4",
+    "webpack-hot-middleware": "^2.21.0"
+  },
   "dependencies": {
-    "blessed": "^0.1.81",
-    "byu-wabs": "^4.0.0",
-    "byu-wabs-oauth": "^1.1.0",
-    "chokidar": "^1.7.0",
-    "command-exists": "^1.2.2",
-    "copy-dir": "^0.3.0",
-    "update-notifier": "^2.2.0"
+    "byu-wabs": "^5.0.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2"
   }
 }
