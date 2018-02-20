@@ -60,7 +60,7 @@ function runBrowserSync() {
     });
 
     // watch for changes to src directory and reload browser sync
-    gulp.watch(config.build.src + '/*.js').on('change', () => {
+    gulp.watch(config.build.src + '/**/*.{js,css}').on('change', () => {
         clearTimeout(browserTimeoutId);
         browserTimeoutId = setTimeout(() => browserSync.reload(), 250);
     });
