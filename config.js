@@ -21,33 +21,33 @@ module.exports = {
 
     // build configuration
     build: {
-        dest: path.resolve(__dirname, 'www'),
-        main: path.resolve(__dirname, 'src/js/app.js'),
-        src: path.resolve(__dirname, 'src')
+        dest: path.resolve(__dirname, 'www'),               // where to output build file to
+        main: path.resolve(__dirname, 'src/js/app.js'),     // the main JavaScript file for your app
+        src: path.resolve(__dirname, 'src')                 // the source directory to build from
     },
 
-    // development settings
+    // development settings - used with: npm run dev
     development: {
-        browserSync: true,
-        host: 'http://localhost',
-        port: 8460,
-        serverArgs: ['--inspect=9229'],
-        serverSync: true
+        browserSync: true,                  // whether to use browserSync
+        host: 'http://localhost',           // the hostname
+        port: 8460,                         // the port to run the development server on
+        serverArgs: ['--inspect=9229'],     // arguments to pass to the server when started up - defaults to allow remote debugging on port 9229
+        serverSync: true                    // whether to restart the server when code changes on it
     },
 
     // environment
-    production: (process.env.HANDEL_ENVIRONMENT_NAME || process.env.NODE_ENV) === 'production',
+    production: (process.env.HANDEL_ENVIRONMENT_NAME || process.env.NODE_ENV) === 'production',     // whether the environment is production or not
 
     // server settings
     server: {
-        directory: path.resolve(__dirname, 'server'),
-        main: path.resolve(__dirname, 'server/index'),
-        port: 8461
+        directory: path.resolve(__dirname, 'server'),   // the directory that the server resides within
+        main: path.resolve(__dirname, 'server/index'),  // the main JavaScript file for the server
+        port: 8461                                      // the port to run the server on
     },
 
-    // wabs configuration
+    // wabs configuration - for full instructions see https://www.npmjs.com/package/byu-wabs
     wabs: {
-        appName: 'wabs-demo'    // <== change this value to your app name
+        appName: 'wabs-demo'
     }
 
 };
