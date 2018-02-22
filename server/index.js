@@ -18,16 +18,10 @@
 const config        = require('../config');
 const cookieParser  = require('cookie-parser');
 const express       = require('express');
-const wabs          = require('../../wabs-middleware/index')(config.wabs); // require('byu-wabs')(config.wabs);
+const wabs          = require('byu-wabs')(config.wabs);
 
 // create the express app
 const app = express();
-
-app.use((req, res, next) => {
-    console.log(req.method + ' ' + req.path);
-    next();
-
-});
 
 // must parse cookies before wabs.init
 app.use(cookieParser(wabs.config.encryptSecret));
