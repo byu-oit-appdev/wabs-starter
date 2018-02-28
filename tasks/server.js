@@ -74,7 +74,7 @@ function runServerSync() {
         let sent;
 
         function load() {
-            const server = fork(config.server.main, { execArgv: args });
+            const server = fork(config.server.main, ['--wabs-starter-dev'], { execArgv: args });
 
             server.on('error', err => {
                 if (!sent) {

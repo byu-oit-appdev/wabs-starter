@@ -17,7 +17,7 @@
 'use strict';
 const path      = require('path');
 
-module.exports = {
+const config = {
 
     // build configuration
     build: {
@@ -51,3 +51,9 @@ module.exports = {
     }
 
 };
+
+if (Array.from(process.argv).indexOf('--wabs-starter-dev') !== -1) {
+    config.wabs.host = config.development.host + ':' + config.development.port;
+}
+
+module.exports = config;
