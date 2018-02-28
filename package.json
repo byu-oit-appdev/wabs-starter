@@ -1,6 +1,6 @@
 {
   "name": "@byu-oit/wabs-starter",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A starter template for building single page applications using Vue, Vue Router, and Vuex in conjunction with Gulp and Webpack.",
   "main": "index.js",
   "scripts": {
