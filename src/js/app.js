@@ -17,7 +17,7 @@
 'use strict';
 import App from '../components/App';
 import BYU from '../plugins/byu';
-import router from '../router/router'
+import router from './router'
 import store from '../store/index'
 import Vue from 'vue'
 
