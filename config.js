@@ -21,9 +21,9 @@ const config = {
 
     // build configuration
     build: {
-        dest: path.resolve(__dirname, 'www'),               // where to output build file to
-        main: path.resolve(__dirname, 'src/js/app.js'),     // the main JavaScript file for your app
-        src: path.resolve(__dirname, 'src')                 // the source directory to build from
+        dest: path.resolve(__dirname, 'www'),                   // where to output build file to
+        main: path.resolve(__dirname, 'src/assets/js/app.js'),  // the main JavaScript file for your app
+        src: path.resolve(__dirname, 'src')                     // the source directory to build from
     },
 
     // development settings - used with: npm run dev

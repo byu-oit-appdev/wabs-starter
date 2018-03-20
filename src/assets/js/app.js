@@ -15,20 +15,37 @@
  *    limitations under the License.
  **/
 'use strict';
-import Home from '../pages/Home'
-import Temp from '../pages/Temp'
+import App from '../../components/App';
+import BYU from '../../plugins/byu';
+import router from './router'
+import store from '../../store/index'
 import Vue from 'vue'
-import VueRouter from 'vue-router'
 
-Vue.use(VueRouter);
+import '../css/main.scss';
 
+Vue.config.ignoredElements = [
+    'byu-footer',
+    'byu-footer-column',
+    'byu-header',
+    'byu-menu',
+    'byu-search',
+    'byu-user-info'
+];
 
-export default new VueRouter({
-    mode: 'history',
-    routes: [
-        { path: '/', component: Home },
-        { path: '/:title', component: Temp },
+Vue.use(BYU, {
+    search: {                   // remove search object to disable search
+        autoSearch: false,
+        autoSearchDelay: 300,
+        callback: function(value) {
+            console.log('Searched for ' + value)
+        },
+        value: ''
+    }
+});
 
-        { path: '*', redirect: '/' }
-    ]
+window.app = new Vue({
+    el: '#app',
+    render: h => h(App),
+    router,
+    store
 });
