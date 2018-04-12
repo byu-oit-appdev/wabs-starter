@@ -15,13 +15,16 @@
  *    limitations under the License.
  **/
 'use strict';
-const config        = require('../config');
-const cookieParser  = require('cookie-parser');
-const express       = require('express');
-const wabs          = require('byu-wabs')(config.wabs);
+const { Nuxt, Builder } = require('nuxt');
+const config            = require('../config');
+const cookieParser      = require('cookie-parser');
+const express           = require('express');
+const wabs              = require('byu-wabs')(config.wabs);
 
 // create the express app
 const app = express();
+const nuxt = new Nuxt(config.nuxt);
+
 
 // must parse cookies before wabs.init
 app.use(cookieParser(wabs.config.encryptSecret));
@@ -31,16 +34,36 @@ app.use(wabs.init());
 //
 //
 
+// render every route with Nuxt
+app.use(nuxt.render);
+
+(config.production ? listen() : new Builder(nuxt).build().then(listen))
+    .then(listener => {
+        const port = listener.address().port;
+        console.log('Server listening on port: ' + port);
+        if (process.send) process.send({ type: 'server-listening', port: port });
+    })
+    .catch(err => {
+        console.error(err.stack);
+        process.exit(1);
+    });
+
+
 // serve index.html and static files
-const publicDirectoryPath = config.build.dest;
+/*const publicDirectoryPath = config.build.dest;
 app.use(wabs.index({ render: publicDirectoryPath + '/index.html' }));
-app.use(express.static(publicDirectoryPath));
+app.use(express.static(publicDirectoryPath));*/
 
-// start listening for requests
-const listener = app.listen(config.server.port, function(err) {
-    if (err) throw err;
+// start the server listening for requests
+function listen() {
+    return new Promise((resolve, reject) => {
+        const listener = app.listen(config.server.port, function(err) {
+            if (err) return reject(err);
 
-    const port = listener.address().port;
-    console.log('Server listening on port: ' + port);
-    if (process.send) process.send({ type: 'server-listening', port: port });
-});
+            const port = listener.address().port;
+            console.log('Server listening on port: ' + port);
+            if (process.send) process.send({ type: 'server-listening', port: port });
+            return resolve(listener);
+        });
+    });
+}
