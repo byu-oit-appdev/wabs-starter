@@ -17,6 +17,8 @@
 'use strict';
 const path      = require('path');
 
+const wabsReservedPath = '__wabs';
+
 const config = {
 
     // build configuration
@@ -35,6 +37,47 @@ const config = {
         serverSync: true                    // whether to restart the server when code changes on it
     },
 
+    // nuxt configuration
+    nuxt: {
+        head: {                             // page headers
+            title: 'nuxt',
+            meta: [
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { hid: 'description', name: 'description', content: 'Nuxt.js project' }
+            ],
+            link: [
+                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+            ]
+        },
+
+        loading: {                          // customize progress bar
+            color: '#5F7C9B'                // progress bar color
+        },
+
+        modules: [
+            '/' + wabsReservedPath + '/script.js'   // add wabs browser script to each page
+        ],
+
+        rootDir: path.resolve(__dirname, 'src'),
+
+        build: {                            // build configuration
+            /*
+            ** Run ESLint on save
+            */
+            extend (config, { isDev, isClient }) {
+                if (isDev && isClient) {
+                    config.module.rules.push({
+                        enforce: 'pre',
+                        test: /\.(js|vue)$/,
+                        loader: 'eslint-loader',
+                        exclude: /(node_modules)/
+                    })
+                }
+            }
+        }
+    },
+
     // environment
     production: (process.env.HANDEL_ENVIRONMENT_NAME || process.env.NODE_ENV) === 'production',     // whether the environment is production or not
 
@@ -47,7 +90,8 @@ const config = {
 
     // wabs configuration - for full instructions see https://www.npmjs.com/package/byu-wabs
     wabs: {
-        appName: 'wabs-demo'
+        appName: 'wabs-demo',
+        reservedPath: wabsReservedPath
     }
 
 };
