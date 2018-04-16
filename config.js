@@ -29,7 +29,7 @@ const config = {
     // development settings - used with: npm run dev
     development: {
         browserSync: true,                  // whether to use browserSync
-        host: 'http://localhost',           // the hostname
+        host: 'http://localhost',           // the hostname that browserSync uses to proxy to your server
         port: 8460,                         // the port to run the development server on
         serverArgs: ['--inspect=9229'],     // arguments to pass to the server when started up - defaults to allow remote debugging on port 9229
         serverSync: true                    // whether to restart the server when code changes on it
