@@ -31,7 +31,7 @@ const config = {
     // development settings - used with: npm run dev
     development: {
         browserSync: true,                  // whether to use browserSync
-        host: 'http://localhost',           // the hostname
+        host: 'http://localhost',           // the protocol and hostname used by browser sync to connect to proxied server
         port: 8460,                         // the port to run the development server on
         serverArgs: ['--inspect=9229'],     // arguments to pass to the server when started up - defaults to allow remote debugging on port 9229
         serverSync: true                    // whether to restart the server when code changes on it
@@ -40,14 +40,15 @@ const config = {
     // nuxt configuration
     nuxt: {
         head: {                             // page headers
-            title: 'nuxt',
+            titleTemplate: '%s',
             meta: [
                 { charset: 'utf-8' },
                 { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-                { hid: 'description', name: 'description', content: 'Nuxt.js project' }
+                { hid: 'description', name: 'description', content: 'Web app description' }
             ],
             link: [
-                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+                { src: '/' + wabsReservedPath + '/script.js' }      // add wabs browser script to each page
             ]
         },
 
@@ -55,11 +56,12 @@ const config = {
             color: '#5F7C9B'                // progress bar color
         },
 
-        modules: [
-            '/' + wabsReservedPath + '/script.js'   // add wabs browser script to each page
-        ],
+        /*modules: [
 
-        rootDir: path.resolve(__dirname, 'src'),
+        ],*/
+
+        rootDir: path.resolve(__dirname),
+        srcDir: path.resolve(__dirname, 'src'),
 
         build: {                            // build configuration
             /*
