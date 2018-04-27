@@ -12,12 +12,12 @@
   "author": "James Speirs <james.speirs@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "babel-core": "^6.26.0",
+    "babel-core": "^6.26.3",
     "babel-preset-env": "^1.6.1",
-    "browser-sync": "^2.23.6",
+    "browser-sync": "^2.23.7",
     "css-loader": "^0.28.11",
     "gulp": "^3.9.1",
-    "node-sass": "^4.8.3",
+    "node-sass": "^4.9.0",
     "sass-loader": "^6.0.7",
     "style-loader": "^0.20.3",
     "vue": "^2.5.16",
@@ -27,10 +27,10 @@
     "vuex": "^3.0.1",
     "webpack": "^3.11.0",
     "webpack-dev-middleware": "^2.0.6",
-    "webpack-hot-middleware": "^2.22.0"
+    "webpack-hot-middleware": "^2.22.1"
   },
   "dependencies": {
-    "byu-wabs": "^5.1.6",
+    "byu-wabs": "^5.4.1",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
     "nuxt": "^1.4.0"
