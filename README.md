@@ -1,3 +1,6 @@
+# Deprecation
+This starter is no longer maintained and is not recommended as a basis for projects.
+
 # WABS Starter
 
 This starter is preconfigured to optimize development and simplify deployment. It will work with very little additional effort on your part. This readme serves as a guide to using the starter.
